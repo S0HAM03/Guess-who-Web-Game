@@ -1,6 +1,12 @@
 # Guess Who! — Web Edition
 
-![Game Screen](./docs/game_screen.png)
+<div align="center">
+  <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101" alt="Socket.io" />
+  <img src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" alt="Express.js" />
+</div>
 
 A fully playable **real-time 2-player Guess Who!** game running in the browser with WebSocket multiplayer. Both players see the same board of 24 characters, each secretly assigned one, and take turns asking yes/no questions to identify their opponent's character.
 
@@ -46,7 +52,6 @@ The backend uses a strict **State Machine** mapped to a `room` object to enforce
 2. **Join the Lobby**: Your friend clicks *Join Game*, enters the code, and their name.
 3. **Select Category**: The host picks the theme for the game board.
 4. **Pick Your Character**: 
-   ![Character Select](./docs/character_select.png)
    Choose your secret character from the 24 options. Your opponent will be trying to guess this character!
 5. **Ask Questions**: Take turns asking Yes/No questions (e.g., "Does your character wear glasses?").
 6. **Eliminate Characters**: Click on characters on your board to toggle their opacity, narrowing down the possibilities.
