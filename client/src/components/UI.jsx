@@ -427,26 +427,19 @@ export function LobbyView({ roomCode, players, isHost, onBack, onStart, error })
 ═══════════════════════════════════════════════════════ */
 export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);
-  const [aiPrompt, setAiPrompt] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const handleGenerateAI = () => {
-    if (!aiPrompt.trim()) return;
-    onOpenBuilder([], aiPrompt);
-  };
 
   return (
-    <div className="game-bg" style={{ minHeight: '100vh', padding: '2rem 1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ minHeight: '100vh', padding: '2rem 1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'radial-gradient(circle at top, #1e293b 0%, #020617 80%)' }}>
       <div style={{ width: '100%', maxWidth: 1000, margin: 'auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '1.5rem', animation: 'slideUp 0.5s ease-out' }}>
-          <div style={{ display: 'inline-flex', background: '#FFD700', border: '3px solid #000', borderRadius: 12, padding: '8px 16px', boxShadow: '4px 4px 0 #000', marginBottom: '0.5rem', gap: 8, alignItems: 'center' }}>
-            <Sparkles size={20} color="#000" />
-            <span className="display-font" style={{ fontSize: '0.9rem', color: '#000' }}>HOST'S CHOICE</span>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem', animation: 'slideUp 0.5s ease-out' }}>
+          <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '6px 16px', marginBottom: '1rem', gap: 8, alignItems: 'center', backdropFilter: 'blur(10px)' }}>
+            <Sparkles size={16} color="#60a5fa" />
+            <span style={{ fontFamily: "'Nunito'", fontWeight: 800, fontSize: '0.8rem', color: '#60a5fa', letterSpacing: '1px', textTransform: 'uppercase' }}>Host Selection</span>
           </div>
-          <h1 className="display-font" style={{ fontSize: 'clamp(1.5rem,4vw,2.5rem)', color: '#f8fafc', WebkitTextStroke: '2px #0f172a', textShadow: '3px 3px 0 #0f172a', margin: 0 }}>
+          <h1 className="display-font" style={{ fontSize: 'clamp(2rem,5vw,3.5rem)', color: '#ffffff', margin: 0, textShadow: '0 0 30px rgba(255,255,255,0.1)', letterSpacing: '2px' }}>
             PICK A CATEGORY
           </h1>
-          <p style={{ color: '#94a3b8', fontWeight: 900, fontFamily: "'Nunito'", marginTop: '0.2rem', fontSize: '0.9rem' }}>
+          <p style={{ color: '#94a3b8', fontWeight: 600, fontFamily: "'Nunito'", marginTop: '0.5rem', fontSize: '1rem' }}>
             Choose the character set for this round
           </p>
         </div>
@@ -458,28 +451,29 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
               onMouseEnter={() => setHovered(cat.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                background: hovered === cat.id ? '#3b82f6' : '#1e293b',
-                border: hovered === cat.id ? '2px solid #60a5fa' : '2px solid #334155',
-                borderRadius: 12,
-                padding: '0.8rem',
+                background: hovered === cat.id ? 'rgba(59, 130, 246, 0.15)' : 'rgba(30, 41, 59, 0.4)',
+                border: hovered === cat.id ? '1px solid rgba(96, 165, 250, 0.5)' : '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 16,
+                padding: '1rem',
                 cursor: 'pointer',
-                boxShadow: hovered === cat.id ? '4px 4px 0px rgba(0,0,0,0.5)' : '3px 3px 0px rgba(0,0,0,0.3)',
-                transform: hovered === cat.id ? 'translate(-2px, -2px)' : 'none',
-                transition: 'all 0.1s ease',
+                boxShadow: hovered === cat.id ? '0 0 20px rgba(59, 130, 246, 0.2)' : '0 10px 30px rgba(0,0,0,0.5)',
+                transform: hovered === cat.id ? 'translateY(-4px)' : 'none',
+                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                 animation: `slideUp 0.4s ${0.05 * i}s both`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
-                textAlign: 'center'
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem',
+                textAlign: 'center',
+                backdropFilter: 'blur(10px)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 50, height: 50, background: '#3b82f6', border: '2px solid #1e3a8a', borderRadius: '50%', boxShadow: '2px 2px 0 rgba(0,0,0,0.5)', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 60, height: 60, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)', overflow: 'hidden' }}>
                 {cat.thumbnail ? (
-                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', background: '#fff', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
+                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '8px', background: 'linear-gradient(135deg, #e2e8f0, #ffffff)', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
                 ) : (
-                  <span style={{ fontSize: '1.2rem' }}>{cat.emoji || '✨'}</span>
+                  <span style={{ fontSize: '1.5rem' }}>{cat.emoji || '✨'}</span>
                 )}
               </div>
-              <h3 className="display-font" style={{ fontSize: '0.85rem', color: '#f8fafc', margin: 0 }}>{cat.name}</h3>
-              <span style={{ color: '#94a3b8', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.65rem', background: '#0f172a', border: '2px solid #334155', borderRadius: 6, padding: '2px 6px' }}>
+              <h3 style={{ fontFamily: "'Nunito'", fontWeight: 800, fontSize: '0.95rem', color: '#f1f5f9', margin: 0, letterSpacing: '0.5px' }}>{cat.name}</h3>
+              <span style={{ color: '#94a3b8', fontFamily: "'Nunito'", fontWeight: 700, fontSize: '0.7rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 20, padding: '3px 10px' }}>
                 {cat.id === 's8ul' ? 33 : 24} Chars
               </span>
             </button>

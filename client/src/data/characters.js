@@ -47,8 +47,8 @@ export const CATEGORIES = [
     emoji: '🎮',
     color: '#138808',
     description: 'Top Indian Gaming Creators',
-    thumbnail: 'https://cdn-icons-png.flaticon.com/512/2991/2991606.png',
-    zoom: 1.5,
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU8L-E_foQ_dU8JNbZ9qYEA20VuBEcxta8YvN7bBynryTpEUKOdOMhz-2e&s=10',
+    zoom: 2.5,
   },
   {
     id: 'topcreators',
@@ -56,7 +56,8 @@ export const CATEGORIES = [
     emoji: '🌍',
     color: '#FFD700',
     description: 'Biggest YouTubers in the World',
-    thumbnail: 'https://cdn-icons-png.flaticon.com/512/1006/1006992.png',
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdmRc6Q5XlB63S4JuXiGfpCxElTlpzb2ReGxejwukmgQ&s=10',
+    zoom: 1.5,
   },
   {
     id: 'streamers',
@@ -64,7 +65,8 @@ export const CATEGORIES = [
     emoji: '📺',
     color: '#9D00FF',
     description: 'Live streaming legends',
-    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Twitch_Glitch_Logo_Purple.svg/512px-Twitch_Glitch_Logo_Purple.svg.png',
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdmRc6Q5XlB63S4JuXiGfpCxElTlpzb2ReGxejwukmgQ&s=10',
+    zoom: 1.5,
   },
   {
     id: 'indiancricketers',
@@ -81,8 +83,8 @@ export const CATEGORIES = [
     emoji: '🎬',
     color: '#9D00FF',
     description: 'Bollywood & Tollywood Icons',
-    thumbnail: 'https://img.icons8.com/color/512/bollywood.png',
-    zoom: 1.3,
+    thumbnail: 'https://img.magnific.com/free-vector/realistic-bollywood-cinema-sign_52683-35071.jpg',
+    zoom: 2.3,
   },
   {
     id: 'footballers',
@@ -98,7 +100,8 @@ export const CATEGORIES = [
     emoji: '🎭',
     color: '#9D00FF',
     description: 'Hollywood A-listers',
-    thumbnail: 'https://cdn-icons-png.flaticon.com/512/3418/3418886.png',
+    thumbnail: 'https://cdn.vectorstock.com/i/500p/14/02/comedy-amp-tragedy-masks-icon-vector-54451402.jpg',
+    zoom: 2.4,
   },
   {
     id: 'anime',
@@ -106,7 +109,8 @@ export const CATEGORIES = [
     emoji: '⚔️',
     color: '#FF6600',
     description: 'Iconic anime characters',
-    thumbnail: 'https://cdn-icons-png.flaticon.com/512/1149/1149405.png',
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRn-lrsYnZMOBqO0jP_4QJ5jW261akaqopXwVhN_zT6Q&s=10',
+    zoom: 1.8,
   },
   {
     id: 'superheroes',
@@ -115,7 +119,7 @@ export const CATEGORIES = [
     color: '#00E5FF',
     description: 'Marvel & DC icons',
     thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe8HQp5CFGVNgLTMBGNMs75_Gvn15RxQEd8PtlnPyenA&s=10',
-    zoom: 1.5,
+    zoom: 1.9,
   },
   {
     id: 'memes',
@@ -123,7 +127,8 @@ export const CATEGORIES = [
     emoji: '😂',
     color: '#FF2A5F',
     description: 'Internet-famous people',
-    thumbnail: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/Original_Doge_meme.jpg/300px-Original_Doge_meme.jpg',
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY0Qjbcb3XCa3TVjOpkhAB4t1E91wnYkVr3Jpg8sxFTQ&s=10',
+    zoom: 2.0,
   }
 ];
 
