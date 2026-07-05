@@ -186,25 +186,25 @@ If any images in the game look incorrect, simply paste the correct image URL in 
 | :--- | :--- | :--- |
 | `ninja` | Ninja | |
 | `shroud` | Shroud | |
-| `drdisrespect` | DrDisrespect | |
-| `xqc` | xQc | |
-| `hasan` | HasanAbi | |
-| `poki` | Pokimane | |
-| `lacy` | Lacy | |
-| `jasontheween` | JasonTheWeen | |
-| `ibai` | Ibai Llanos | |
-| `kai` | Kai Cenat | |
-| `speed` | IShowSpeed | |
-| `fanum` | Fanum | |
-| `jynxzi` | Jynxzi | |
-| `caseoh` | CaseOh | |
-| `adin` | Adin Ross | |
-| `ohnepixel` | ohnePixel | |
+| `drdisrespect` | DrDisrespect | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSG0s9vov2Bb8KTISkbd5l5Am4uCwBPLAGpRZwLqk5sBg&s=10 |
+| `xqc` | xQc | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAwFKExunvoZ27jFDrNlSB7dTIiGzXrIg8tvIagWvT0A&s=10 |
+| `hasan` | HasanAbi |  |
+| `poki` | Pokimane |  |
+| `lacy` | Lacy | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHYz1gi5AKs7uBvYCA-wNx6gzZe6OB38v2HEsAHsJV8w&s=10 |
+| `jasontheween` | JasonTheWeen |  |
+| `ibai` | Ibai Llanos | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmN7lPoK51mQuA2NPVKVrCBI0ZdoZYO7Lu-RC-ALjn6Q&s=10 |
+| `kai` | Kai Cenat | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxjf4dcIcQYx-RIpuBxaZItdm7JniFJu3HVimsk9nkkA&s=10 |
+| `speed` | IShowSpeed | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlUHpXUaQuNGM4MC-6Q0jhq9okPxo3q5UmbsKV4xjOoA&s=10 |
+| `fanum` | Fanum | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ13XPIHf6UA7qzrsWzirTfbqP6tKHkrt1Nf2FyovzE7g&s=10 |
+| `jynxzi` | Jynxzi |  |
+| `caseoh` | CaseOh | https://i.scdn.co/image/ab67616d00001e02f471d7ad06f0185e57563079 |
+| `adin` | Adin Ross | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvaI1nevwMQ9VziGjaX0lTS61IAAv299-PX9SHEJL75Q&s=10 |
+| `ohnepixel` | ohnePixel | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZbmkmrRqLk-v-Sq3gjdVef2yZbahwPkspz2KqYy4B5A&s=10 |
 | `moistcritical` | MoistCr1TiKaL | |
-| `burntpeanut` | TheBurntPeanut | |
+| `burntpeanut` | TheBurntPeanut | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3U4yMWk-MQg1Ly8x5LLjOu1cpF8lrKSyJsDPFFLiiag&s=10 |
 | `valkyrae` | Valkyrae | |
-| `neon` | Neon | |
-| `sketch` | Sketch | |
-| `tfue` | Tfue | |
-| `kingwools` | Kingwools | |
-| `asmongold` | Asmongold | |
+| `Stable Ronaldo` | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRL37KM11e5F3jaAylBGE6Hya0T747YlZCT9mtJ3NN6Cw&s=10Neon |
+| `sketch` | Sketch | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBt0I2HjhmeHa_Q2pMIyTGzl927VfZSB4ND8AnVKIOyQ&s=10 |
+| `tfue` | Tfue | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmQ4tvgTbq10YKaGikyxxrtB4-_hxNNzMTV5DYSnNX1g&s=10 |
+| `kingwools` | Kingwools | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROG_xCvXnB5XeM1QJWs8kZlQX3ArIkbrnv2VgBTndPiw&s=10 |
+| `asmongold` | Asmongold | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyX3v472OZR8-upXtuMn3zKsGzuprE4-DBmq-TZfOiHA&s=10 |

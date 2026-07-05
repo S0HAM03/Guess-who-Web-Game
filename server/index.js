@@ -14,14 +14,14 @@ const {
   initSelectionPhase, selectCharacter, beginGame,
   submitQuestion, submitAnswer, makeGuess,
   eliminateCharacter, removePlayer, getPlayerList,
-  handleAnswerTimeout, forcePassTurn,
+  handleAnswerTimeout, forcePassTurn, passTurn,
 } = require('./gameLogic');
 
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3002;
 
-const allowedOrigins = process.env.CLIENT_ORIGIN || '*';
+const allowedOrigins = process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',') : '*';
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
@@ -223,9 +223,8 @@ io.on('connection', (socket) => {
     });
     console.log(`[A] ${roomCode}: ${answer}. New turn: ${result.newTurn}`);
     
-    // Resume the turn timer for the asker
-    const timeLeft = pausedTimeLeft.get(roomCode) || 90000;
-    startTurnTimer(roomCode, result.newTurn, timeLeft);
+    // Start fresh turn timer for the new player
+    startTurnTimer(roomCode, result.newTurn, 90000);
   });
 
   // ── ELIMINATE CHARACTER (client-local only) ──
@@ -267,14 +266,18 @@ io.on('connection', (socket) => {
 
   // ── PASS TURN MANUALLY ──
   socket.on('pass_turn', ({ roomCode }) => {
+    console.log(`[PASS ATTEMPT] ${roomCode} by ${socket.id}`);
     const passResult = passTurn(roomCode, socket.id);
     if (passResult) {
       io.to(roomCode).emit('turn_passed', {
         newTurn: passResult.newTurn,
         round: passResult.round
       });
-      console.log(`[PASS] ${roomCode}: ${socket.id} passed turn.`);
+      console.log(`[PASS SUCCESS] ${roomCode}: ${socket.id} passed turn.`);
       startTurnTimer(roomCode, passResult.newTurn, 90000);
+    } else {
+      console.log(`[PASS FAILED] passTurn returned null for ${socket.id}`);
+      socket.emit('game_error', { message: 'Cannot pass turn right now.' });
     }
   });
 
@@ -308,3 +311,4 @@ server.listen(PORT, () => {
   console.log(`\n🎭 Guess Who! Server running on http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/health\n`);
 });
+

@@ -276,7 +276,7 @@ function QAPanel({
 ═══════════════════════════════════════════════════════ */
 export default function GameScreen({
   characters, mySecretCharId, myId, myName, opponentName,
-  currentTurn, round, category, question, askerId, lastAnswer,
+  currentTurn: currentTurnProp, round: roundProp, category, question, askerId, lastAnswer,
   onSendQuestion, onAnswer, onMakeGuess, onEliminateChar, onAnswerTimeout, onPassTurn, turnSkipped, wrongGuessFlash
 }) {
   const [eliminated, setEliminated] = useState(new Set());
@@ -286,9 +286,28 @@ export default function GameScreen({
   const [turnTimeLeft, setTurnTimeLeft] = useState(90);
   const [showSkippedAlert, setShowSkippedAlert] = useState(false);
   const [hasAskedThisTurn, setHasAskedThisTurn] = useState(false);
+  // Local turn state — allows instant client-side pass
+  const [localTurn, setLocalTurn] = useState(currentTurnProp);
+  const [localRound, setLocalRound] = useState(roundProp);
 
-  const isMyTurn = currentTurn === myId;
+  // Keep localTurn in sync when server pushes a real turn update
+  useEffect(() => {
+    setLocalTurn(currentTurnProp);
+  }, [currentTurnProp]);
+
+  useEffect(() => {
+    setLocalRound(roundProp);
+  }, [roundProp]);
+
+  const isMyTurn = localTurn === myId;
   const mySecret = characters.find(c => c.id === mySecretCharId);
+
+  // When turn changes (locally or from server), reset timer + asked flag
+  useEffect(() => {
+    setTurnTimeLeft(90);
+    setHasAskedThisTurn(false);
+    setIsGuessing(false);
+  }, [localTurn]);
 
   useEffect(() => { if (question) setIsGuessing(false); }, [question]);
 
@@ -298,7 +317,7 @@ export default function GameScreen({
       const t = setTimeout(() => setAnswerFlash(null), 3000);
       return () => clearTimeout(t);
     }
-  }, [lastAnswer, round]);
+  }, [lastAnswer, localRound]);
 
   useEffect(() => {
     if (wrongGuessFlash) {
@@ -312,21 +331,16 @@ export default function GameScreen({
   }, [wrongGuessFlash, onEliminateChar]);
 
   useEffect(() => {
-    setTurnTimeLeft(90);
-    setHasAskedThisTurn(false);
-  }, [currentTurn]);
-
-  useEffect(() => {
     // 90s Turn Timer countdown logic
     if (question) {
       setHasAskedThisTurn(true);
-      return; // Pause timer
+      return; // Pause timer while waiting for opponent's answer
     }
     const interval = setInterval(() => {
       setTurnTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(interval);
-  }, [currentTurn, question]);
+  }, [localTurn, question]);
 
   useEffect(() => {
     if (turnSkipped) {
@@ -334,7 +348,20 @@ export default function GameScreen({
       const t = setTimeout(() => setShowSkippedAlert(false), 4000);
       return () => clearTimeout(t);
     }
-  }, [turnSkipped, currentTurn]);
+  }, [turnSkipped, localTurn]);
+
+  // CLIENT-SIDE INSTANT pass turn — UI flips immediately, server syncs both players
+  const handlePassTurn = useCallback(() => {
+    // Flip localTurn instantly: use a placeholder so isMyTurn becomes false right now
+    setLocalTurn('__waiting__');
+    setLocalRound(prev => prev + 1);
+    setTurnTimeLeft(0);
+    setHasAskedThisTurn(false);
+    setIsGuessing(false);
+    // Tell the server — it will emit turn_passed to BOTH players,
+    // which will sync localTurn to the real socket IDs on both screens
+    onPassTurn();
+  }, [onPassTurn]);
 
   const toggleEliminate = useCallback((charId) => {
     if (charId === mySecretCharId) return;
@@ -370,9 +397,6 @@ export default function GameScreen({
             <span className="display-font" style={{ fontSize: '1rem', color: '#000' }}>GUESS WHO?</span>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ background: '#E5E7EB', border: '2px solid #000', borderRadius: 6, padding: '4px 12px', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.75rem', color: '#000' }}>
-              ROUND {round}
-            </span>
             <span style={{ background: isMyTurn ? '#00FF66' : '#FF2A5F', border: '2px solid #000', borderRadius: 6, padding: '4px 12px', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.75rem', color: isMyTurn ? '#000' : '#FFF', boxShadow: '2px 2px 0 #000' }}>
               {isMyTurn ? '🎯 YOUR TURN' : `⏳ ${opponentName}`}
             </span>
@@ -427,14 +451,15 @@ export default function GameScreen({
             />
           ))}
         </div>
-        <div style={{ maxWidth: 1000, margin: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <QAPanel
-            isMyTurn={isMyTurn} question={question} askerId={askerId} myId={myId} opponentName={opponentName}
-            onSendQuestion={onSendQuestion} onAnswer={onAnswer} isGuessing={isGuessing}
-            setIsGuessing={setIsGuessing} lastAnswer={answerFlash} onAnswerTimeout={onAnswerTimeout}
-            turnTimeLeft={turnTimeLeft} onPassTurn={onPassTurn} hasAskedThisTurn={hasAskedThisTurn}
-          />
-        </div>
+      </div>
+      
+      <div style={{ maxWidth: 1000, margin: 'auto', width: '100%', paddingBottom: '1rem' }}>
+        <QAPanel
+          isMyTurn={isMyTurn} question={question} askerId={askerId} myId={myId} opponentName={opponentName}
+          onSendQuestion={onSendQuestion} onAnswer={onAnswer} isGuessing={isGuessing}
+          setIsGuessing={setIsGuessing} lastAnswer={answerFlash} onAnswerTimeout={onAnswerTimeout}
+          turnTimeLeft={turnTimeLeft} onPassTurn={handlePassTurn} hasAskedThisTurn={hasAskedThisTurn}
+        />
       </div>
 
       {showSkippedAlert && isMyTurn && (

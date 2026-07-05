@@ -117,7 +117,10 @@ function submitAnswer(roomCode, socketId, answer) {
   room.pendingQuestion = null;
   room.pendingAskerId = null;
 
-  // Do NOT switch turn; asker continues their turn to cross out characters
+  // Switch turn to the answerer
+  room.currentTurn = socketId;
+  room.round++;
+  
   return { success: true, answer, newTurn: room.currentTurn, round: room.round, prevQuestion };
 }
 
