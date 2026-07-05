@@ -8,6 +8,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+
 const {
   createRoom, joinRoom, getRoomBySocket,
   initSelectionPhase, selectCharacter, beginGame,
@@ -20,13 +21,94 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3002;
 
-const allowedOrigins = process.env.CLIENT_ORIGIN
-  ? process.env.CLIENT_ORIGIN.split(',')
-  : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
+const allowedOrigins = '*';
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 app.get('/health', (req, res) => res.json({ status: 'ok', game: 'Guess Who!', port: PORT }));
+
+app.post('/api/generate-category', async (req, res) => {
+  try {
+    const { categoryName } = req.body;
+    if (!categoryName) return res.status(400).json({ error: 'Missing categoryName' });
+    if (!process.env.GROQ_API_KEY) return res.status(500).json({ error: 'Missing GROQ_API_KEY. Please add it to server/.env' });
+
+    const prompt = `You are an assistant for the game Guess Who. Return exactly 24 recognizable characters/people/entities strictly related to the theme: "${categoryName}".
+You must return a pure JSON object containing a single key "characters" with an array of STRINGS.
+
+Example format:
+{
+  "characters": [
+    "Mario",
+    "Luigi",
+    "Princess Peach"
+  ]
+}`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' }
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'Failed to generate from Groq');
+
+    const result = JSON.parse(data.choices[0].message.content);
+    res.json({ characters: result.characters });
+  } catch (error) {
+    console.error('[GROQ API ERROR]', error);
+    const isRateLimit = error.status === 429 || (error.message && error.message.includes('429'));
+    const message = isRateLimit ? 'AI Rate Limit Reached! Please wait a moment.' : `Failed: ${error.message}`;
+    res.status(isRateLimit ? 429 : 500).json({ error: message, details: error.message });
+  }
+});
+
+app.post('/api/search-character', async (req, res) => {
+  try {
+    const { query, categoryName } = req.body;
+    if (!query || !categoryName) return res.status(400).json({ error: 'Missing query or categoryName' });
+    if (!process.env.GROQ_API_KEY) return res.status(500).json({ error: 'Missing GROQ_API_KEY' });
+
+    const prompt = `You are an autocomplete engine for the game Guess Who. The category is "${categoryName}". 
+The user typed: "${query}".
+Return exactly 3 matching recognizable character/people names related to the category that best match or complete the user's query.
+You must return a pure JSON object containing a single key "suggestions" with an array of STRINGS.
+Example format:
+{
+  "suggestions": ["Spider-Man", "Spider-Gwen", "Spider-Woman"]
+}`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' }
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'Failed to search from Groq');
+
+    const result = JSON.parse(data.choices[0].message.content);
+    res.json({ suggestions: result.suggestions });
+  } catch (error) {
+    console.error('[GROQ SEARCH ERROR]', error);
+    res.status(500).json({ error: 'Failed to search character', details: error.message });
+  }
+});
 
 const io = new Server(server, {
   cors: { origin: allowedOrigins, methods: ['GET', 'POST'] },
@@ -104,6 +186,21 @@ io.on('connection', (socket) => {
       });
     });
     console.log(`[SELECT] ${roomCode} entering character selection. Category: ${category}`);
+  });
+
+  // ── HOST CANCELS SELECTION ──
+  socket.on('cancel_selection', ({ roomCode }) => {
+    const room = getRoomBySocket(socket.id);
+    if (!room || room.hostId !== socket.id) return;
+    room.status = 'waiting';
+    room.category = null;
+    room.characters = [];
+    room.players.forEach(p => {
+      p.secretCharId = null;
+      p.hasSelected = false;
+    });
+    io.to(roomCode).emit('selection_cancelled');
+    console.log(`[SELECT] ${roomCode} cancelled by host. Back to lobby.`);
   });
 
   // ── PLAYER SELECTS THEIR SECRET CHARACTER ──

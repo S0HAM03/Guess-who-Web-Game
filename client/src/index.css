@@ -5,18 +5,19 @@ html, body, #root { height: 100%; }
 
 body {
   font-family: 'Nunito', sans-serif;
-  background-color: #E5E7EB;
-  color: #000000;
-  overflow: hidden;
+  background-color: #0f172a;
+  background-image: radial-gradient(rgba(255,255,255,0.03) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+  color: #f8fafc;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .display-font { font-family: 'Bungee', cursive; }
 
 /* ── Background Patterns ── */
 .game-bg {
-  background-color: #f4f4f5;
-  background-image: radial-gradient(#d4d4d8 2.5px, transparent 2.5px);
-  background-size: 32px 32px;
+  background-color: transparent;
 }
 
 .dark-bg {

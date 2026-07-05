@@ -4,6 +4,7 @@ import {
   Dices, Trophy, Clock, Zap, Shield, Globe, ChevronDown,
   Sparkles, Target, HelpCircle, CheckCircle, XCircle, Eye, Star
 } from 'lucide-react';
+import { SmartImage } from './SmartImage';
 
 /* ═══════════════════════════════════════════════════════
    DESIGN TOKENS — Neo-Brutalism (matches HiveMind)
@@ -113,7 +114,7 @@ export function LandingView({ onHost, onJoin }) {
 
   const HOW_STEPS = [
     { icon: <Gamepad2 size={32}/>, title: 'Create or Join', desc: 'Host a room or enter a 4-letter code to challenge a friend.', color: '#00FF66' },
-    { icon: <Search size={32}/>, title: 'Pick a Category', desc: 'Choose from 12 categories — YouTubers, footballers, anime & more!', color: '#00E5FF' },
+    { icon: <Search size={32}/>, title: 'Pick a Category', desc: 'Choose from 12 categories — Streamers, footballers, anime & more!', color: '#00E5FF' },
     { icon: <HelpCircle size={32}/>, title: 'Ask Questions', desc: 'Take turns asking yes/no questions to narrow down the suspects.', color: '#FFD700' },
     { icon: <Trophy size={32}/>, title: 'Make Your Guess!', desc: 'Think you know? Guess your opponent\'s secret character to win!', color: '#FF2A5F' },
   ];
@@ -424,55 +425,233 @@ export function LobbyView({ roomCode, players, isHost, onBack, onStart, error })
 /* ═══════════════════════════════════════════════════════
    CATEGORY SELECT VIEW (host only)
 ═══════════════════════════════════════════════════════ */
-export function CategorySelectView({ categories, onSelect }) {
+export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateAI = () => {
+    if (!aiPrompt.trim()) return;
+    onOpenBuilder([], aiPrompt);
+  };
 
   return (
-    <div className="dark-bg" style={{ minHeight: '100vh', padding: '2rem', overflowY: 'auto' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem', animation: 'slideUp 0.5s ease-out' }}>
-          <div style={{ display: 'inline-flex', background: '#FFD700', border: '4px solid #000', borderRadius: 16, padding: '12px 24px', boxShadow: '6px 6px 0 #000', marginBottom: '1rem', gap: 12, alignItems: 'center' }}>
-            <Sparkles size={24}/>
-            <span className="display-font" style={{ fontSize: '1.1rem' }}>HOST'S CHOICE</span>
+    <div className="game-bg" style={{ minHeight: '100vh', padding: '2rem 1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '100%', maxWidth: 1000, margin: 'auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem', animation: 'slideUp 0.5s ease-out' }}>
+          <div style={{ display: 'inline-flex', background: '#FFD700', border: '3px solid #000', borderRadius: 12, padding: '8px 16px', boxShadow: '4px 4px 0 #000', marginBottom: '0.5rem', gap: 8, alignItems: 'center' }}>
+            <Sparkles size={20} color="#000" />
+            <span className="display-font" style={{ fontSize: '0.9rem', color: '#000' }}>HOST'S CHOICE</span>
           </div>
-          <h1 className="display-font" style={{ fontSize: 'clamp(2rem,5vw,3.5rem)', color: '#FFF', WebkitTextStroke: '2px #000', textShadow: '6px 6px 0 #000' }}>
+          <h1 className="display-font" style={{ fontSize: 'clamp(1.5rem,4vw,2.5rem)', color: '#f8fafc', WebkitTextStroke: '2px #0f172a', textShadow: '3px 3px 0 #0f172a', margin: 0 }}>
             PICK A CATEGORY
           </h1>
-          <p style={{ color: '#94A3B8', fontWeight: 800, fontFamily: "'Nunito'", marginTop: '0.5rem' }}>
+          <p style={{ color: '#94a3b8', fontWeight: 900, fontFamily: "'Nunito'", marginTop: '0.2rem', fontSize: '0.9rem' }}>
             Choose the character set for this round
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.8rem', padding: '0 1rem' }}>
           {categories.map((cat, i) => (
             <button key={cat.id} id={`cat-${cat.id}`}
               onClick={() => onSelect(cat.id)}
               onMouseEnter={() => setHovered(cat.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                background: hovered === cat.id ? cat.color : '#1E293B',
-                border: `4px solid ${hovered === cat.id ? '#000' : '#334155'}`,
-                borderRadius: 16,
-                padding: '1.5rem 1rem',
+                background: hovered === cat.id ? '#3b82f6' : '#1e293b',
+                border: hovered === cat.id ? '2px solid #60a5fa' : '2px solid #334155',
+                borderRadius: 12,
+                padding: '0.8rem',
                 cursor: 'pointer',
-                boxShadow: hovered === cat.id ? '6px 6px 0 #000' : '4px 4px 0 rgba(0,0,0,0.5)',
-                transform: hovered === cat.id ? 'translate(-2px,-2px)' : 'translate(0,0)',
-                transition: 'all 0.15s ease',
-                animation: `slideUp 0.4s ${0.04 * i}s both`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-                textAlign: 'center',
-              }}>
-              <div style={{ fontSize: '2.5rem', lineHeight: 1 }}>{cat.emoji}</div>
-              <div className="display-font" style={{ fontSize: '1rem', color: hovered === cat.id ? '#000' : '#FFF' }}>{cat.name}</div>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: hovered === cat.id ? 'rgba(0,0,0,0.7)' : '#64748B', fontFamily: "'Nunito'" }}>
-                {cat.description}
+                boxShadow: hovered === cat.id ? '4px 4px 0px rgba(0,0,0,0.5)' : '3px 3px 0px rgba(0,0,0,0.3)',
+                transform: hovered === cat.id ? 'translate(-2px, -2px)' : 'none',
+                transition: 'all 0.1s ease',
+                animation: `slideUp 0.4s ${0.05 * i}s both`,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
+                textAlign: 'center'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, background: '#3b82f6', border: '2px solid #1e3a8a', borderRadius: '50%', boxShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}>
+                <span style={{ fontSize: '1.2rem' }}>{cat.emoji || '✨'}</span>
               </div>
-              <div style={{ background: hovered === cat.id ? '#000' : cat.color, color: hovered === cat.id ? cat.color : '#000', padding: '3px 12px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 900, fontFamily: "'Nunito'", border: '2px solid #000' }}>
-                24 chars
-              </div>
+              <h3 className="display-font" style={{ fontSize: '0.85rem', color: '#f8fafc', margin: 0 }}>{cat.name}</h3>
+              <span style={{ color: '#94a3b8', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.65rem', background: '#0f172a', border: '2px solid #334155', borderRadius: 6, padding: '2px 6px' }}>
+                {cat.id === 's8ul' ? 33 : 24} Chars
+              </span>
             </button>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   CUSTOM CATEGORY BUILDER
+═══════════════════════════════════════════════════════ */
+export function CustomCategoryBuilder({ initialNames, categoryName, onLockIn, onCancel }) {
+  const [selected, setSelected] = useState(() => initialNames.slice(0, 24));
+  const [customName, setCustomName] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleSearchAI = async () => {
+    if (!customName.trim()) return;
+    setIsSearching(true);
+    setSuggestions([]);
+    try {
+      const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3002';
+      const res = await fetch(`${SERVER_URL}/api/search-character`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: customName, categoryName })
+      });
+      
+      if (res.status === 429 || res.status === 500) {
+        const data = await res.json();
+        if (data.details?.includes('429') || res.status === 429) {
+           setSuggestions(['⚠️ AI Rate Limit Reached! Please wait 15 seconds.']);
+           return;
+        }
+      }
+
+      const data = await res.json();
+      if (data.suggestions) {
+        setSuggestions(data.suggestions);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleDeselect = (name) => {
+    setSelected(s => s.filter(n => n !== name));
+  };
+
+  const handleAddCustom = (nameToAdd) => {
+    const finalName = typeof nameToAdd === 'string' ? nameToAdd : customName;
+    if (!finalName.trim() || selected.length >= 24) return;
+    setSelected(s => [...s, finalName.trim()]);
+    setCustomName('');
+    setSuggestions([]);
+  };
+
+  const handleLockIn = () => {
+    if (selected.length !== 24) return;
+    // Map to final format
+    const finalCharacters = selected.map(name => ({
+      id: name.toLowerCase().replace(/[^a-z0-9]/g, ''),
+      name,
+      traits: {},
+      image: `https://api.dicebear.com/7.x/micah/svg?seed=${encodeURIComponent(name)}&backgroundColor=b6e3f4,c0aede,d1d4f9`
+    }));
+    onLockIn({
+      id: `Custom: ${categoryName}`,
+      characters: finalCharacters
+    });
+  };
+
+  return (
+    <div className="game-bg" style={{ minHeight: '100vh', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        
+        {/* ── HEADER ── */}
+        <div style={{ background: '#1e293b', padding: '1.5rem 2rem', borderRadius: 16, border: '4px solid #000', boxShadow: '8px 8px 0 #000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 className="display-font" style={{ color: '#00E5FF', margin: 0, fontSize: '2rem', textShadow: '2px 2px 0 #0f172a' }}>BUILDING: {categoryName.toUpperCase()}</h2>
+            <p style={{ color: '#94a3b8', margin: 0, fontFamily: "'Nunito'", fontWeight: 900 }}>Select exactly 24 characters</p>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="display-font" style={{ color: selected.length === 24 ? '#00FF66' : '#FFD700', fontSize: '1.8rem', background: '#0f172a', padding: '8px 16px', borderRadius: 12, border: '4px solid #000', boxShadow: '4px 4px 0 rgba(0,0,0,0.5)' }}>
+              {selected.length} / 24
+            </div>
+            <ChunkyButton onClick={handleLockIn} disabled={selected.length !== 24} color={selected.length === 24 ? '#00FF66' : '#94a3b8'} style={{ padding: '0.8rem 1.5rem', fontSize: '1.2rem' }}>
+              LOCK IN & PLAY
+            </ChunkyButton>
+            <ChunkyButton onClick={onCancel} color="#FF2A5F" style={{ padding: '0.8rem 1.5rem', fontSize: '1.2rem' }}>
+              CANCEL
+            </ChunkyButton>
+          </div>
+        </div>
+
+        {/* ── CUSTOM ADDITION BAR & DROPDOWN ── */}
+        <div style={{ position: 'relative' }}>
+          <div style={{ background: '#0f172a', padding: '1.5rem', borderRadius: 16, border: '4px solid #000', boxShadow: '6px 6px 0 #000', display: 'flex', gap: '1rem', flexWrap: 'wrap', position: 'relative', zIndex: 10 }}>
+            <input 
+              value={customName} 
+              onChange={e => {
+                setCustomName(e.target.value);
+                setSuggestions([]);
+              }} 
+              placeholder="Type full name (e.g. CarryMinati)..." 
+              style={{ flex: 1, minWidth: 200, padding: '1rem', borderRadius: 12, border: '4px solid #000', background: '#1e293b', color: '#f8fafc', fontFamily: "'Nunito'", fontWeight: 800, fontSize: '1.2rem', outline: 'none', boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.3)' }} 
+              onKeyDown={e => e.key === 'Enter' && handleSearchAI()}
+            />
+            <ChunkyButton onClick={handleSearchAI} disabled={!customName.trim() || isSearching} color="#00E5FF" style={{ padding: '0 1.5rem', fontSize: '1.1rem' }}>
+              {isSearching ? 'SEARCHING...' : '🔍 SEARCH AI'}
+            </ChunkyButton>
+            <ChunkyButton onClick={() => handleAddCustom(customName)} disabled={selected.length >= 24 || !customName.trim()} color="#FFD700" style={{ padding: '0 1.5rem', fontSize: '1.1rem' }}>
+              + FORCE ADD
+            </ChunkyButton>
+          </div>
+          
+          {/* SEARCH DROPDOWN */}
+          {(suggestions.length > 0 || isSearching) && (
+            <div style={{ position: 'absolute', top: '100%', left: '1.5rem', right: '1.5rem', marginTop: '0.5rem', background: '#1e293b', border: '4px solid #000', borderRadius: 12, boxShadow: '6px 6px 0 #000', zIndex: 9, overflow: 'hidden' }}>
+              {isSearching ? (
+                <div style={{ padding: '1rem', color: '#00E5FF', fontFamily: "'Nunito'", fontWeight: 800 }}>Searching AI for matches...</div>
+              ) : (
+                suggestions.map((sug, i) => (
+                  <button 
+                    key={i} 
+                    onClick={() => handleAddCustom(sug)}
+                    className="chunky-hover"
+                    style={{ width: '100%', padding: '1rem', background: 'transparent', border: 'none', borderBottom: i < suggestions.length - 1 ? '2px solid #334155' : 'none', color: '#f8fafc', fontFamily: "'Nunito'", fontWeight: 800, fontSize: '1.2rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}
+                  >
+                    <div style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid #000', overflow: 'hidden', background: '#3b82f6', flexShrink: 0 }}>
+                      <SmartImage character={{ id: sug.toLowerCase().replace(/[^a-z0-9]/g, ''), name: sug }} />
+                    </div>
+                    {sug}
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── SELECTED BOARD ── */}
+        <div style={{ background: '#1e293b', borderRadius: 16, border: '4px solid #000', boxShadow: '8px 8px 0 #000', overflow: 'hidden' }}>
+          <div style={{ background: '#0f172a', padding: '1.5rem 2rem', borderBottom: '4px solid #000' }}>
+            <h3 className="display-font" style={{ color: '#f8fafc', margin: 0, fontSize: '1.5rem' }}>SELECTED BOARD</h3>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: 0, fontFamily: "'Nunito'", fontWeight: 800 }}>Click to remove</p>
+          </div>
+          <div style={{ padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.5rem' }}>
+            {selected.map((name, i) => (
+              <button 
+                key={`${name}-${i}`} 
+                onClick={() => handleDeselect(name)} 
+                className="chunky-hover"
+                style={{ 
+                  background: '#00E5FF', border: '4px solid #000', borderRadius: 12, padding: '1rem', 
+                  fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1rem', cursor: 'pointer', 
+                  boxShadow: '4px 4px 0 #000', transition: 'all 0.1s ease', textAlign: 'left',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', overflow: 'hidden' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #000', overflow: 'hidden', background: '#3b82f6', flexShrink: 0 }}>
+                    <SmartImage character={{ id: name.toLowerCase().replace(/[^a-z0-9]/g, ''), name }} />
+                  </div>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span> 
+                </div>
+                <span style={{ color: '#FF2A5F', fontSize: '1.2rem', marginLeft: '0.5rem', flexShrink: 0 }}>✕</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import {
   AnimatedCursor, LandingView, HostSetupView, JoinSetupView,
   LobbyView, CategorySelectView, WinnerScreen, DisconnectOverlay,
+  CustomCategoryBuilder
 } from './components/UI';
 import GameScreen from './components/GameScreen';
 import CharacterSelectScreen from './components/CharacterSelectScreen';
@@ -10,7 +11,7 @@ import CATEGORIES, { getCharacters } from './data/characters';
 import './index.css';
 
 // ── Socket connection ──────────────────────────────────
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3002';
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || `http://${window.location.hostname}:3002`;
 let socket = null;
 
 function getSocket() {
@@ -31,6 +32,7 @@ export default function App() {
   const [players, setPlayers] = useState([]);
   const [isHost, setIsHost] = useState(false);
   const [lobbyError, setLobbyError] = useState('');
+  const [builderData, setBuilderData] = useState({ names: [], categoryName: '' });
 
   // Character selection phase
   const [selectData, setSelectData] = useState({
@@ -123,6 +125,10 @@ export default function App() {
       setView('lobby');
     });
 
+    s.on('selection_cancelled', () => {
+      setView('category_select');
+    });
+
     s.on('opponent_disconnected', () => setDisconnected(true));
 
     return () => {
@@ -147,9 +153,18 @@ export default function App() {
     setView('category_select');
   }, []);
 
-  const handleCategorySelect = useCallback((categoryId) => {
-    const chars = getCharacters(categoryId);
-    socketRef.current.emit('start_game', { roomCode, category: categoryId, characters: chars });
+  const handleOpenBuilder = useCallback((names, categoryName) => {
+    setBuilderData({ names, categoryName });
+    setView('builder');
+  }, []);
+
+  const handleCategorySelect = useCallback((categoryData) => {
+    if (typeof categoryData === 'string') {
+      const chars = getCharacters(categoryData);
+      socketRef.current.emit('start_game', { roomCode, category: categoryData, characters: chars });
+    } else {
+      socketRef.current.emit('start_game', { roomCode, category: categoryData.id, characters: categoryData.characters });
+    }
   }, [roomCode]);
 
   const handleCharacterSelect = useCallback((charId) => {
@@ -212,7 +227,15 @@ export default function App() {
         />
       )}
       {view === 'category_select' && (
-        <CategorySelectView categories={CATEGORIES} onSelect={handleCategorySelect}/>
+        <CategorySelectView categories={CATEGORIES} onSelect={handleCategorySelect} onOpenBuilder={handleOpenBuilder} />
+      )}
+      {view === 'builder' && (
+        <CustomCategoryBuilder 
+          initialNames={builderData.names} 
+          categoryName={builderData.categoryName}
+          onLockIn={handleCategorySelect}
+          onCancel={() => setView('category_select')}
+        />
       )}
       {view === 'character_select' && (
         <CharacterSelectScreen
@@ -222,6 +245,8 @@ export default function App() {
           opponentName={selectData.opponentName}
           category={selectData.category}
           selectionStatus={selectData.selectionStatus}
+          isHost={isHost}
+          onCancel={() => socketRef.current.emit('cancel_selection', { roomCode })}
           onSelect={handleCharacterSelect}
         />
       )}
