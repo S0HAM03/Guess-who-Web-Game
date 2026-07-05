@@ -492,13 +492,11 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
 export function CustomCategoryBuilder({ initialNames, categoryName, onLockIn, onCancel }) {
   const [selected, setSelected] = useState(() => initialNames.slice(0, 24));
   const [customName, setCustomName] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-
+    
   const handleSearchAI = async () => {
     if (!customName.trim()) return;
     setIsSearching(true);
-    setSuggestions([]);
+    
     try {
       const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'https://guess-who-web-game.onrender.com';
       const res = await fetch(`${SERVER_URL}/api/search-character`, {
@@ -535,7 +533,7 @@ export function CustomCategoryBuilder({ initialNames, categoryName, onLockIn, on
     if (!finalName.trim() || selected.length >= 24) return;
     setSelected(s => [...s, finalName.trim()]);
     setCustomName('');
-    setSuggestions([]);
+    
   };
 
   const handleLockIn = () => {
@@ -583,17 +581,15 @@ export function CustomCategoryBuilder({ initialNames, categoryName, onLockIn, on
               value={customName} 
               onChange={e => {
                 setCustomName(e.target.value);
-                setSuggestions([]);
+                
               }} 
               placeholder="Type full name (e.g. CarryMinati)..." 
               style={{ flex: 1, minWidth: 200, padding: '1rem', borderRadius: 12, border: '4px solid #000', background: '#1e293b', color: '#f8fafc', fontFamily: "'Nunito'", fontWeight: 800, fontSize: '1.2rem', outline: 'none', boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.3)' }} 
-              onKeyDown={e => e.key === 'Enter' && handleSearchAI()}
+              onKeyDown={e => e.key === 'Enter' && handleAddCustom(customName)}
             />
-            <ChunkyButton onClick={handleSearchAI} disabled={!customName.trim() || isSearching} color="#00E5FF" style={{ padding: '0 1.5rem', fontSize: '1.1rem' }}>
-              {isSearching ? 'SEARCHING...' : '🔍 SEARCH AI'}
-            </ChunkyButton>
+            
             <ChunkyButton onClick={() => handleAddCustom(customName)} disabled={selected.length >= 24 || !customName.trim()} color="#FFD700" style={{ padding: '0 1.5rem', fontSize: '1.1rem' }}>
-              + FORCE ADD
+              + ADD CUSTOM
             </ChunkyButton>
           </div>
           
