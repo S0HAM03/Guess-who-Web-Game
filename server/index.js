@@ -60,6 +60,8 @@ function startAnswerTimer(roomCode, askerId, TIMEOUT_MS = 15000) {
 
 // Track server-side 90s turn timers per room
 const turnTimers = new Map(); // roomCode → setTimeout handle
+const turnEndsAt = new Map(); // roomCode → timestamp of when it ends
+const pausedTimeLeft = new Map(); // roomCode → timeLeft when paused
 
 function clearTurnTimer(roomCode) {
   if (turnTimers.has(roomCode)) {
@@ -70,6 +72,7 @@ function clearTurnTimer(roomCode) {
 
 function startTurnTimer(roomCode, currentTurnId, TIMEOUT_MS = 90000) {
   clearTurnTimer(roomCode);
+  turnEndsAt.set(roomCode, Date.now() + TIMEOUT_MS);
   const handle = setTimeout(() => {
     const result = forcePassTurn(roomCode, currentTurnId);
     if (result) {
@@ -78,10 +81,20 @@ function startTurnTimer(roomCode, currentTurnId, TIMEOUT_MS = 90000) {
         round: result.round,
       });
       console.log(`[TIMEOUT] ${roomCode}: no question/guess in 90s. Turn passed → ${result.newTurn}`);
-      startTurnTimer(roomCode, result.newTurn, TIMEOUT_MS);
+      startTurnTimer(roomCode, result.newTurn, 90000); // next player gets full 90s
     }
   }, TIMEOUT_MS);
   turnTimers.set(roomCode, handle);
+}
+
+function pauseTurnTimer(roomCode) {
+  clearTurnTimer(roomCode);
+  const endsAt = turnEndsAt.get(roomCode);
+  let timeLeft = 90000;
+  if (endsAt) {
+    timeLeft = Math.max(0, endsAt - Date.now());
+  }
+  pausedTimeLeft.set(roomCode, timeLeft);
 }
 
 // ─────────────────────────────────────────────
@@ -189,7 +202,7 @@ io.on('connection', (socket) => {
       askerId: result.askerId,
     });
 
-    clearTurnTimer(roomCode); // Turn action taken
+    pauseTurnTimer(roomCode); // Pause the 90s timer while waiting for answer
     // Start 15-second server-side answer timer
     startAnswerTimer(roomCode, result.askerId);
     console.log(`[Q] ${roomCode}: "${question}"`);
@@ -209,7 +222,10 @@ io.on('connection', (socket) => {
       prevQuestion: result.prevQuestion,
     });
     console.log(`[A] ${roomCode}: ${answer}. New turn: ${result.newTurn}`);
-    startTurnTimer(roomCode, result.newTurn, 90000); // Start 90s for new player
+    
+    // Resume the turn timer for the asker
+    const timeLeft = pausedTimeLeft.get(roomCode) || 90000;
+    startTurnTimer(roomCode, result.newTurn, timeLeft);
   });
 
   // ── ELIMINATE CHARACTER (client-local only) ──
@@ -221,16 +237,45 @@ io.on('connection', (socket) => {
   socket.on('make_guess', ({ roomCode, charId }) => {
     const result = makeGuess(roomCode, socket.id, charId);
     if (!result.success) { socket.emit('game_error', { message: result.message }); return; }
-    clearAnswerTimer(roomCode);
-    clearTurnTimer(roomCode);
-    io.to(roomCode).emit('game_over', {
-      winnerId: result.winnerId,
-      correct: result.correct,
-      guessedCharId: charId,
-      secretCharId: result.secretCharId,
-      guesserId: socket.id,
-    });
-    console.log(`[GUESS] ${roomCode}: ${result.correct ? 'CORRECT' : 'WRONG'}. Winner: ${result.winnerId}`);
+    
+    if (result.correct) {
+      clearAnswerTimer(roomCode);
+      clearTurnTimer(roomCode);
+      io.to(roomCode).emit('game_over', {
+        winnerId: result.winnerId,
+        correct: result.correct,
+        guessedCharId: charId,
+        secretCharId: result.secretCharId,
+      });
+    } else {
+      // Incorrect guess - automatically pass turn
+      io.to(roomCode).emit('guess_result', {
+        correct: false,
+        guesserId: socket.id,
+        guessedCharId: charId
+      });
+      const passResult = passTurn(roomCode, socket.id);
+      if (passResult) {
+        io.to(roomCode).emit('turn_passed', {
+          newTurn: passResult.newTurn,
+          round: passResult.round
+        });
+        startTurnTimer(roomCode, passResult.newTurn, 90000);
+      }
+    }
+  });
+
+  // ── PASS TURN MANUALLY ──
+  socket.on('pass_turn', ({ roomCode }) => {
+    const passResult = passTurn(roomCode, socket.id);
+    if (passResult) {
+      io.to(roomCode).emit('turn_passed', {
+        newTurn: passResult.newTurn,
+        round: passResult.round
+      });
+      console.log(`[PASS] ${roomCode}: ${socket.id} passed turn.`);
+      startTurnTimer(roomCode, passResult.newTurn, 90000);
+    }
   });
 
   // ── REMATCH ──

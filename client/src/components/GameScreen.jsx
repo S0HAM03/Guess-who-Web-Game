@@ -126,7 +126,7 @@ function CharacterCard({ char, isEliminated, isSecret, isGuessing, onToggle, onG
 function QAPanel({
   isMyTurn, question, askerId, myId, opponentName,
   onSendQuestion, onAnswer, isGuessing, setIsGuessing, lastAnswer, onAnswerTimeout,
-  turnTimeLeft
+  turnTimeLeft, onPassTurn, hasAskedThisTurn
 }) {
   const [inputQ, setInputQ] = useState('');
   const iNeedToAnswer = !!question && askerId !== myId;
@@ -164,32 +164,51 @@ function QAPanel({
 
       {isMyTurn && !question && !isGuessing && (
         <>
-          <div style={{ flex: 1, minWidth: 180 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontFamily: "'Nunito'", fontWeight: 800 }}>TYPE YOUR QUESTION</span>
+          {!hasAskedThisTurn ? (
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontFamily: "'Nunito'", fontWeight: 800 }}>TYPE YOUR QUESTION</span>
+                <span style={{ color: turnTimeLeft <= 10 ? '#FF2A5F' : '#94a3b8', fontSize: '0.75rem', fontFamily: "'Nunito'", fontWeight: 900, animation: turnTimeLeft <= 10 ? 'pulseHard 1s infinite' : 'none' }}>
+                  ⏳ {turnTimeLeft}s LEFT
+                </span>
+              </div>
+              <input id="question-input" value={inputQ}
+                onChange={e => setInputQ(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSend()}
+                placeholder="Ask a yes/no question..."
+                maxLength={120}
+                style={{
+                  width: '100%', background: '#0f172a',
+                  border: '2px solid #334155', borderRadius: 10,
+                  padding: '0.65rem 1rem', color: '#f8fafc', fontSize: '1rem',
+                  fontFamily: "'Nunito'", fontWeight: 800, outline: 'none',
+                  boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.3)'
+                }}
+              />
+            </div>
+          ) : (
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ color: '#00E5FF', fontSize: '1.1rem', fontFamily: "'Nunito'", fontWeight: 900 }}>
+                You already asked a question!
+              </span>
               <span style={{ color: turnTimeLeft <= 10 ? '#FF2A5F' : '#94a3b8', fontSize: '0.75rem', fontFamily: "'Nunito'", fontWeight: 900, animation: turnTimeLeft <= 10 ? 'pulseHard 1s infinite' : 'none' }}>
                 ⏳ {turnTimeLeft}s LEFT
               </span>
             </div>
-            <input id="question-input" value={inputQ}
-              onChange={e => setInputQ(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSend()}
-              placeholder="Ask a yes/no question..."
-              maxLength={120}
-              style={{
-                width: '100%', background: '#0f172a',
-                border: '2px solid #334155', borderRadius: 10,
-                padding: '0.65rem 1rem', color: '#f8fafc', fontSize: '1rem',
-                fontFamily: "'Nunito'", fontWeight: 800, outline: 'none',
-                boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.3)'
-              }}
-            />
-          </div>
-          <ChunkyButton id="btn-send-question" color="#00E5FF" onClick={handleSend} disabled={!inputQ.trim()} style={{ padding: '0.65rem 1.2rem' }}>
-            <Send size={18}/> SEND
-          </ChunkyButton>
+          )}
+          
+          {!hasAskedThisTurn && (
+            <ChunkyButton id="btn-send-question" color="#00E5FF" onClick={handleSend} disabled={!inputQ.trim()} style={{ padding: '0.65rem 1.2rem' }}>
+              <Send size={18}/> SEND
+            </ChunkyButton>
+          )}
+          
           <ChunkyButton id="btn-make-guess" color="#FFD700" onClick={() => setIsGuessing(true)} style={{ padding: '0.65rem 1.2rem', whiteSpace: 'nowrap' }}>
             <Target size={18}/> GUESS!
+          </ChunkyButton>
+
+          <ChunkyButton color="#FF2A5F" onClick={onPassTurn} style={{ padding: '0.65rem 1.2rem', whiteSpace: 'nowrap' }}>
+            <span style={{ color: '#FFF' }}>PASS TURN</span>
           </ChunkyButton>
         </>
       )}
@@ -258,7 +277,7 @@ function QAPanel({
 export default function GameScreen({
   characters, mySecretCharId, myId, myName, opponentName,
   currentTurn, round, category, question, askerId, lastAnswer,
-  onSendQuestion, onAnswer, onMakeGuess, onEliminateChar, onAnswerTimeout, turnSkipped
+  onSendQuestion, onAnswer, onMakeGuess, onEliminateChar, onAnswerTimeout, onPassTurn, turnSkipped, wrongGuessFlash
 }) {
   const [eliminated, setEliminated] = useState(new Set());
   const [isGuessing, setIsGuessing] = useState(false);
@@ -266,6 +285,7 @@ export default function GameScreen({
   const [answerFlash, setAnswerFlash] = useState(null);
   const [turnTimeLeft, setTurnTimeLeft] = useState(90);
   const [showSkippedAlert, setShowSkippedAlert] = useState(false);
+  const [hasAskedThisTurn, setHasAskedThisTurn] = useState(false);
 
   const isMyTurn = currentTurn === myId;
   const mySecret = characters.find(c => c.id === mySecretCharId);
@@ -281,12 +301,27 @@ export default function GameScreen({
   }, [lastAnswer, round]);
 
   useEffect(() => {
+    if (wrongGuessFlash) {
+      setEliminated(prev => {
+        const next = new Set(prev);
+        next.add(wrongGuessFlash);
+        return next;
+      });
+      onEliminateChar(wrongGuessFlash);
+    }
+  }, [wrongGuessFlash, onEliminateChar]);
+
+  useEffect(() => {
+    setTurnTimeLeft(90);
+    setHasAskedThisTurn(false);
+  }, [currentTurn]);
+
+  useEffect(() => {
     // 90s Turn Timer countdown logic
     if (question) {
-      setTurnTimeLeft(90);
-      return;
+      setHasAskedThisTurn(true);
+      return; // Pause timer
     }
-    setTurnTimeLeft(90);
     const interval = setInterval(() => {
       setTurnTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
@@ -392,24 +427,16 @@ export default function GameScreen({
             />
           ))}
         </div>
+        <div style={{ maxWidth: 1000, margin: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <QAPanel
+            isMyTurn={isMyTurn} question={question} askerId={askerId} myId={myId} opponentName={opponentName}
+            onSendQuestion={onSendQuestion} onAnswer={onAnswer} isGuessing={isGuessing}
+            setIsGuessing={setIsGuessing} lastAnswer={answerFlash} onAnswerTimeout={onAnswerTimeout}
+            turnTimeLeft={turnTimeLeft} onPassTurn={onPassTurn} hasAskedThisTurn={hasAskedThisTurn}
+          />
+        </div>
       </div>
 
-      {/* ── Q&A PANEL ── */}
-      <QAPanel
-        isMyTurn={isMyTurn}
-        question={question}
-        askerId={askerId}
-        myId={myId}
-        opponentName={opponentName}
-        onSendQuestion={onSendQuestion}
-        onAnswer={onAnswer}
-        isGuessing={isGuessing}
-        setIsGuessing={setIsGuessing}
-        lastAnswer={answerFlash}
-        onAnswerTimeout={onAnswerTimeout}
-        turnTimeLeft={turnTimeLeft}
-      />
-      
       {showSkippedAlert && isMyTurn && (
         <div style={{
           position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
@@ -422,7 +449,7 @@ export default function GameScreen({
         </div>
       )}
       
-      {showSkippedAlert && !isMyTurn && (
+      {turnSkipped && !isMyTurn && (
         <div style={{
           position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
           background: '#FF2A5F', color: '#FFF', border: '3px solid #000', borderRadius: 12,
@@ -431,6 +458,19 @@ export default function GameScreen({
           animation: 'bounceDown 0.5s cubic-bezier(0.175,0.885,0.32,1.275)'
         }}>
           ⚠️ You ran out of time! Turn passed to {opponentName}.
+        </div>
+      )}
+
+      {wrongGuessFlash && (
+        <div style={{
+          position: 'fixed', top: 80, left: '50%', transform: 'translateX(-50%)',
+          background: '#FFD700', color: '#000', border: '4px solid #000', borderRadius: 16,
+          padding: '16px 32px', zIndex: 1000, boxShadow: '8px 8px 0 #000',
+          fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1.2rem', textAlign: 'center',
+          animation: 'bounceDown 0.5s cubic-bezier(0.175,0.885,0.32,1.275)'
+        }}>
+          ❌ WRONG GUESS!<br/>
+          <span style={{ fontSize: '0.9rem' }}>Turn passed to opponent.</span>
         </div>
       )}
     </div>

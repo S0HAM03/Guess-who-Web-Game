@@ -86,6 +86,7 @@ function beginGame(roomCode) {
   room.pendingQuestion = null;
   room.pendingAskerId = null;
   room.winner = null;
+  room.hasAskedQuestion = false;
   // Randomly pick who asks first
   room.currentTurn = room.players[Math.floor(Math.random() * 2)].id;
   return { success: true, room };
@@ -101,6 +102,7 @@ function submitQuestion(roomCode, socketId, question) {
 
   room.pendingQuestion = question.trim();
   room.pendingAskerId = socketId;
+  room.hasAskedQuestion = true;
   return { success: true, question: room.pendingQuestion, askerId: socketId };
 }
 
@@ -115,11 +117,8 @@ function submitAnswer(roomCode, socketId, answer) {
   room.pendingQuestion = null;
   room.pendingAskerId = null;
 
-  // Switch turn: now the answerer gets to ask
-  room.currentTurn = socketId;
-  room.round++;
-
-  return { success: true, answer, newTurn: socketId, round: room.round, prevQuestion };
+  // Do NOT switch turn; asker continues their turn to cross out characters
+  return { success: true, answer, newTurn: room.currentTurn, round: room.round, prevQuestion };
 }
 
 // Make a final guess
@@ -131,10 +130,14 @@ function makeGuess(roomCode, socketId, guessedCharId) {
   const opponent = room.players.find(p => p.id !== socketId);
   const isCorrect = opponent.secretCharId === guessedCharId;
 
-  room.status = 'finished';
-  room.winner = isCorrect ? socketId : opponent.id;
-
-  return { success: true, correct: isCorrect, winnerId: room.winner, secretCharId: opponent.secretCharId };
+  if (isCorrect) {
+    room.status = 'finished';
+    room.winner = socketId;
+    return { success: true, correct: true, winnerId: socketId, secretCharId: opponent.secretCharId };
+  } else {
+    // Incorrect guess: do not end the game, just end the turn
+    return { success: true, correct: false, winnerId: null, secretCharId: null };
+  }
 }
 
 function eliminateCharacter(roomCode, socketId, charId) {
@@ -170,10 +173,30 @@ function handleAnswerTimeout(roomCode, askerId) {
 
   room.pendingQuestion = null;
   room.pendingAskerId = null;
+  // Answer timeout also forfeits the turn
   room.currentTurn = answerer.id;
   room.round++;
+  room.hasAskedQuestion = false;
 
   return { newTurn: answerer.id, round: room.round };
+}
+
+// Pass Turn (manual or timeout)
+function passTurn(roomCode, socketId) {
+  const room = rooms.get(roomCode);
+  if (!room || room.status !== 'playing') return null;
+  if (room.currentTurn !== socketId) return null; // Only active player can pass
+
+  const opponent = room.players.find(p => p.id !== socketId);
+  if (!opponent) return null;
+
+  room.pendingQuestion = null;
+  room.pendingAskerId = null;
+  room.currentTurn = opponent.id;
+  room.round++;
+  room.hasAskedQuestion = false;
+
+  return { newTurn: opponent.id, round: room.round };
 }
 
 // Force pass turn due to 90s timeout
@@ -199,5 +222,5 @@ module.exports = {
   initSelectionPhase, selectCharacter, beginGame,
   submitQuestion, submitAnswer, makeGuess,
   eliminateCharacter, removePlayer, getPlayerList,
-  handleAnswerTimeout, forcePassTurn,
+  handleAnswerTimeout, forcePassTurn, passTurn
 };

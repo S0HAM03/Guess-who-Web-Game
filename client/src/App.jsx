@@ -117,6 +117,26 @@ export default function App() {
       }));
     });
 
+    s.on('turn_passed', ({ newTurn, round }) => {
+      setGameState(prev => ({
+        ...prev,
+        question: null, askerId: null,
+        lastAnswer: null,
+        currentTurn: newTurn,
+        round,
+        turnSkipped: false, // User manually passed, so no skip alert
+      }));
+    });
+
+    s.on('guess_result', ({ correct, guesserId, guessedCharId }) => {
+      if (!correct) {
+        setGameState(prev => ({ ...prev, wrongGuessFlash: guessedCharId }));
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, wrongGuessFlash: null }));
+        }, 3000);
+      }
+    });
+
     // ── Game over ──
     s.on('game_over', ({ winnerId, correct, guessedCharId, secretCharId }) => {
       setGameState(prev => {
@@ -146,7 +166,7 @@ export default function App() {
       s.off('room_created'); s.off('room_joined'); s.off('room_error');
       s.off('player_list'); s.off('selection_phase'); s.off('selection_update');
       s.off('game_start'); s.off('question_received'); s.off('answer_received');
-      s.off('turn_timeout');
+      s.off('turn_timeout'); s.off('turn_passed'); s.off('guess_result');
       s.off('game_over'); s.off('rematch_ready'); s.off('opponent_disconnected');
     };
   }, []);
@@ -202,6 +222,10 @@ export default function App() {
   // Client-side timeout: tell server answer timed out
   const handleAnswerTimeout = useCallback(() => {
     socketRef.current.emit('send_answer', { roomCode, answer: 'NO' }); // auto-answer NO
+  }, [roomCode]);
+
+  const handlePassTurn = useCallback(() => {
+    socketRef.current.emit('pass_turn', { roomCode });
   }, [roomCode]);
 
   const handleRematch = useCallback(() => {
@@ -280,7 +304,9 @@ export default function App() {
           onMakeGuess={handleMakeGuess}
           onEliminateChar={handleEliminateChar}
           onAnswerTimeout={handleAnswerTimeout}
+          onPassTurn={handlePassTurn}
           turnSkipped={gameState.turnSkipped}
+          wrongGuessFlash={gameState.wrongGuessFlash}
         />
       )}
       {view === 'winner' && winnerState && (
