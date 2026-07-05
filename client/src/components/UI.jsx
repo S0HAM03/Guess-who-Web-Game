@@ -428,58 +428,75 @@ export function LobbyView({ roomCode, players, isHost, onBack, onStart, error })
 export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);
 
+  const gradients = [
+    'linear-gradient(180deg, #2AC6FF 0%, #1796FA 100%)', // Cyan
+    'linear-gradient(180deg, #FF9C76 0%, #FF5672 100%)', // Peach
+    'linear-gradient(180deg, #5DE4A3 0%, #27D1A5 100%)', // Mint
+    'linear-gradient(180deg, #B055FF 0%, #7623FF 100%)', // Purple
+    'linear-gradient(180deg, #FF7B89 0%, #FF3D5A 100%)', // Red Pink
+    'linear-gradient(180deg, #43C6AC 0%, #191654 100%)', // Deep Blue
+    'linear-gradient(180deg, #F093FB 0%, #F5576C 100%)', // Bright Pink
+    'linear-gradient(180deg, #5EE7DF 0%, #B490CA 100%)', // Pastel
+  ];
+
   return (
-    <div style={{ minHeight: '100vh', padding: '3rem 2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'radial-gradient(circle at top, #1e293b 0%, #020617 100%)' }}>
-      <div style={{ width: '100%', maxWidth: 1200, margin: 'auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem', animation: 'slideUp 0.5s ease-out' }}>
-          <div style={{ display: 'inline-flex', background: 'linear-gradient(135deg, #FFD700, #F59E0B)', borderRadius: 30, padding: '2px' }}>
-            <div style={{ display: 'flex', background: '#0f172a', borderRadius: 28, padding: '8px 24px', gap: 10, alignItems: 'center' }}>
-              <Sparkles size={20} color="#FFD700" />
-              <span style={{ fontFamily: "'Nunito'", fontWeight: 800, fontSize: '1rem', color: '#FFF', letterSpacing: '2px', textTransform: 'uppercase' }}>Host Selection</span>
-            </div>
-          </div>
-          <h1 className="display-font" style={{ fontSize: 'clamp(2.5rem,6vw,4.5rem)', color: '#ffffff', margin: '1rem 0 0 0', textShadow: '0 4px 20px rgba(0, 0, 0, 0.8)', letterSpacing: '2px' }}>
-            PICK A CATEGORY
-          </h1>
-          <p style={{ color: '#94a3b8', fontWeight: 800, fontFamily: "'Nunito'", marginTop: '1rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
-            Choose the character set for this round
+    <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EAF2FA' }}>
+      <div style={{ width: '100%', maxWidth: 1000, background: '#FFFFFF', borderRadius: 12, padding: '3rem', boxShadow: '0 20px 50px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
+        
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <h2 style={{ fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1.4rem', color: '#1B92F6', margin: '0 0 0.5rem 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            SELECT CATEGORIES
+          </h2>
+          <p style={{ color: '#A0AAB5', fontFamily: "'Nunito'", fontWeight: 600, margin: 0, fontSize: '1rem' }}>
+            Please select a category to start the round
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem', padding: '0 1rem' }}>
-          {categories.map((cat, i) => (
-            <button key={cat.id} id={`cat-${cat.id}`}
-              onClick={() => onSelect(cat.id)}
-              onMouseEnter={() => setHovered(cat.id)}
-              onMouseLeave={() => setHovered(null)}
-              style={{
-                background: hovered === cat.id ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                border: hovered === cat.id ? '2px solid #60a5fa' : '2px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 24,
-                padding: '2rem 1.5rem',
-                cursor: 'pointer',
-                boxShadow: hovered === cat.id ? '0 10px 30px rgba(59, 130, 246, 0.3)' : '0 15px 35px rgba(0,0,0,0.5)',
-                transform: hovered === cat.id ? 'scale(1.05) translateY(-5px)' : 'scale(1)',
-                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                animation: `slideUp 0.5s ${0.05 * i}s both`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem',
-                textAlign: 'center',
-                backdropFilter: 'blur(20px)'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 90, height: 90, background: 'rgba(255,255,255,0.05)', border: hovered === cat.id ? '3px solid #60a5fa' : '3px solid rgba(255,255,255,0.1)', borderRadius: '50%', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)', overflow: 'hidden', transition: 'all 0.3s ease' }}>
-                {cat.thumbnail ? (
-                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px', background: 'linear-gradient(135deg, #FFF, #E0E0E0)', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
-                ) : (
-                  <span style={{ fontSize: '2.5rem' }}>{cat.emoji || '✨'}</span>
-                )}
-              </div>
-              <h3 style={{ fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1.3rem', color: '#f8fafc', margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>{cat.name}</h3>
-              <span style={{ color: '#94a3b8', fontFamily: "'Nunito'", fontWeight: 800, fontSize: '0.8rem', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 30, padding: '4px 12px' }}>
-                {cat.id === 's8ul' ? 33 : 24} CHARACTERS
-              </span>
-            </button>
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', maxHeight: '60vh', overflowY: 'auto', padding: '1rem' }}>
+          {categories.map((cat, i) => {
+            const bgGradient = gradients[i % gradients.length];
+            return (
+              <button key={cat.id} id={`cat-${cat.id}`}
+                onClick={() => onSelect(cat.id)}
+                onMouseEnter={() => setHovered(cat.id)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  background: bgGradient,
+                  border: 'none',
+                  borderRadius: 12,
+                  padding: '2.5rem 1.5rem',
+                  cursor: 'pointer',
+                  boxShadow: hovered === cat.id ? '0 15px 30px rgba(0,0,0,0.2)' : '0 10px 20px rgba(0,0,0,0.1)',
+                  transform: hovered === cat.id ? 'translateY(-5px)' : 'none',
+                  transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  textAlign: 'center',
+                  position: 'relative'
+                }}
+              >
+                <div style={{ 
+                  width: 110, height: 110, borderRadius: '50%', marginBottom: '1.5rem',
+                  background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 10px 20px rgba(0,0,0,0.1)', overflow: 'hidden', position: 'relative', zIndex: 2
+                }}>
+                  {cat.thumbnail ? (
+                    <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
+                  ) : (
+                    <span style={{ fontSize: '3rem' }}>{cat.emoji || '✨'}</span>
+                  )}
+                </div>
+                <h3 style={{ fontFamily: "'Nunito'", fontWeight: 800, fontSize: '1.3rem', color: '#FFFFFF', margin: '0 0 0.4rem 0' }}>{cat.name}</h3>
+                <span style={{ color: 'rgba(255,255,255,0.8)', fontFamily: "'Nunito'", fontWeight: 600, fontSize: '0.9rem' }}>
+                  {cat.id === 's8ul' ? 33 : 24} items
+                </span>
+                
+                {/* Decorative horizontal cutouts (simplified) */}
+                <div style={{ position: 'absolute', top: '50%', left: -10, width: 25, height: 6, background: '#EAF2FA', borderRadius: 4, zIndex: 1 }}></div>
+                <div style={{ position: 'absolute', top: '45%', right: -10, width: 20, height: 6, background: '#EAF2FA', borderRadius: 4, zIndex: 1 }}></div>
+                <div style={{ position: 'absolute', top: '55%', right: -5, width: 15, height: 6, background: '#EAF2FA', borderRadius: 4, zIndex: 1 }}></div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
