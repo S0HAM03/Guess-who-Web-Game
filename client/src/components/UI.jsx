@@ -500,7 +500,7 @@ export function CustomCategoryBuilder({ initialNames, categoryName, onLockIn, on
     setIsSearching(true);
     setSuggestions([]);
     try {
-      const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3002';
+      const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'https://guess-who-web-game.onrender.com';
       const res = await fetch(`${SERVER_URL}/api/search-character`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -11,7 +11,7 @@ import CATEGORIES, { getCharacters } from './data/characters';
 import './index.css';
 
 // ── Socket connection ──────────────────────────────────
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || `http://${window.location.hostname}:3002`;
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'https://guess-who-web-game.onrender.com';
 let socket = null;
 
 function getSocket() {
