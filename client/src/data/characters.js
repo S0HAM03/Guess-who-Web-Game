@@ -46,6 +46,20 @@ export const CATEGORIES = [
     description: 'Top Indian Gaming Creators',
   },
   {
+    id: 'topcreators',
+    name: 'Top Global Creators',
+    emoji: '🌍',
+    color: '#FFD700',
+    description: 'Biggest YouTubers in the World',
+  },
+  {
+    id: 'streamers',
+    name: 'Streamers',
+    emoji: '📺',
+    color: '#9D00FF',
+    description: 'Live streaming legends',
+  },
+  {
     id: 'indiancricketers',
     name: 'Indian Cricketers',
     emoji: '🏏',
@@ -60,14 +74,6 @@ export const CATEGORIES = [
     description: 'Bollywood & Tollywood Icons',
   },
   {
-    id: 'topcreators',
-    name: 'Top Global Creators',
-    emoji: '🌍',
-    color: '#FFD700',
-    description: 'Biggest YouTubers in the World',
-  },
-  
-  {
     id: 'footballers',
     name: 'Footballers',
     emoji: '⚽',
@@ -80,20 +86,6 @@ export const CATEGORIES = [
     emoji: '🎭',
     color: '#9D00FF',
     description: 'Hollywood A-listers',
-  },
-  {
-    id: 'streamers',
-    name: 'Streamers',
-    emoji: '📺',
-    color: '#9D00FF',
-    description: 'Live streaming legends',
-  },
-  {
-    id: 'athletes',
-    name: 'Athletes',
-    emoji: '🏆',
-    color: '#00E5FF',
-    description: 'Sports legends across all fields',
   },
   {
     id: 'anime',

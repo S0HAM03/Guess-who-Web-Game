@@ -179,3 +179,32 @@ If any images in the game look incorrect, simply paste the correct image URL in 
 | Jynxzi | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqBQHgUDC6Dm6iFV7kaDd7JUZOtxnbFGkbR_jyBhhrog&s=10 |
 | Deji Olatunji | https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDFd2o0o97qqQoN3V9TzP9egReyDN0l3dsOHY3GgLu2Q&s=10 |
 
+
+### Streamers
+
+| ID | Name | Desired Image URL |
+| :--- | :--- | :--- |
+| `ninja` | Ninja | |
+| `shroud` | Shroud | |
+| `doctor` | DrDisrespect | |
+| `xqc` | xQc | |
+| `hasan` | HasanAbi | |
+| `poki` | Pokimane | |
+| `sykkuno` | Lacy | |
+| `corpse` | JasonTheWeen | |
+| `toast` | Ibai Llanos | |
+| `kai` | Kai Cenat | |
+| `speed` | IShowSpeed | |
+| `fanum` | Fanum | |
+| `jynxzi` | Jynxzi | |
+| `caseoh` | CaseOh | |
+| `adin` | Adin Ross | |
+| `soda` | ohnePixel | |
+| `timu` | MoistCr1TiKaL | |
+| `disguised` | TheBurntPeanut | |
+| `val2` | Valkyrae | |
+| `fuslie` | Neon | |
+| `sketch` | Sketch | |
+| `tfue` | Tfue | |
+| `myth` | Kingwools | |
+| `asmongold` | Asmongold | |
