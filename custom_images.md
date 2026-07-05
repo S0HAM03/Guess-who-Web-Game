@@ -186,25 +186,25 @@ If any images in the game look incorrect, simply paste the correct image URL in 
 | :--- | :--- | :--- |
 | `ninja` | Ninja | |
 | `shroud` | Shroud | |
-| `doctor` | DrDisrespect | |
+| `drdisrespect` | DrDisrespect | |
 | `xqc` | xQc | |
 | `hasan` | HasanAbi | |
 | `poki` | Pokimane | |
-| `sykkuno` | Lacy | |
-| `corpse` | JasonTheWeen | |
-| `toast` | Ibai Llanos | |
+| `lacy` | Lacy | |
+| `jasontheween` | JasonTheWeen | |
+| `ibai` | Ibai Llanos | |
 | `kai` | Kai Cenat | |
 | `speed` | IShowSpeed | |
 | `fanum` | Fanum | |
 | `jynxzi` | Jynxzi | |
 | `caseoh` | CaseOh | |
 | `adin` | Adin Ross | |
-| `soda` | ohnePixel | |
-| `timu` | MoistCr1TiKaL | |
-| `disguised` | TheBurntPeanut | |
-| `val2` | Valkyrae | |
-| `fuslie` | Neon | |
+| `ohnepixel` | ohnePixel | |
+| `moistcritical` | MoistCr1TiKaL | |
+| `burntpeanut` | TheBurntPeanut | |
+| `valkyrae` | Valkyrae | |
+| `neon` | Neon | |
 | `sketch` | Sketch | |
 | `tfue` | Tfue | |
-| `myth` | Kingwools | |
+| `kingwools` | Kingwools | |
 | `asmongold` | Asmongold | |
