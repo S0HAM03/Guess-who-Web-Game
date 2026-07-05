@@ -429,52 +429,54 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);
 
   return (
-    <div style={{ minHeight: '100vh', padding: '2rem 1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'radial-gradient(circle at top, #1e293b 0%, #020617 80%)' }}>
-      <div style={{ width: '100%', maxWidth: 1000, margin: 'auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem', animation: 'slideUp 0.5s ease-out' }}>
-          <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '6px 16px', marginBottom: '1rem', gap: 8, alignItems: 'center', backdropFilter: 'blur(10px)' }}>
-            <Sparkles size={16} color="#60a5fa" />
-            <span style={{ fontFamily: "'Nunito'", fontWeight: 800, fontSize: '0.8rem', color: '#60a5fa', letterSpacing: '1px', textTransform: 'uppercase' }}>Host Selection</span>
+    <div style={{ minHeight: '100vh', padding: '3rem 2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(135deg, #1e0024 0%, #0a0026 50%, #001224 100%)' }}>
+      <div style={{ width: '100%', maxWidth: 1200, margin: 'auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem', animation: 'slideUp 0.5s ease-out' }}>
+          <div style={{ display: 'inline-flex', background: 'linear-gradient(90deg, #FF1493, #00FFFF)', borderRadius: 30, padding: '3px' }}>
+            <div style={{ display: 'flex', background: '#0a0026', borderRadius: 27, padding: '8px 24px', gap: 10, alignItems: 'center' }}>
+              <Sparkles size={20} color="#FFD700" />
+              <span className="display-font" style={{ fontSize: '1rem', color: '#FFF', letterSpacing: '2px', textTransform: 'uppercase' }}>Host Selection</span>
+            </div>
           </div>
-          <h1 className="display-font" style={{ fontSize: 'clamp(2rem,5vw,3.5rem)', color: '#ffffff', margin: 0, textShadow: '0 0 30px rgba(255,255,255,0.1)', letterSpacing: '2px' }}>
+          <h1 className="display-font" style={{ fontSize: 'clamp(2.5rem,6vw,4.5rem)', color: '#ffffff', margin: '1rem 0 0 0', textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 10px rgba(255, 20, 147, 0.8)', letterSpacing: '4px' }}>
             PICK A CATEGORY
           </h1>
-          <p style={{ color: '#94a3b8', fontWeight: 600, fontFamily: "'Nunito'", marginTop: '0.5rem', fontSize: '1rem' }}>
+          <p style={{ color: '#00FFFF', fontWeight: 800, fontFamily: "'Nunito'", marginTop: '1rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
             Choose the character set for this round
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.8rem', padding: '0 1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem', padding: '0 1rem' }}>
           {categories.map((cat, i) => (
             <button key={cat.id} id={`cat-${cat.id}`}
               onClick={() => onSelect(cat.id)}
               onMouseEnter={() => setHovered(cat.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                background: hovered === cat.id ? 'rgba(59, 130, 246, 0.15)' : 'rgba(30, 41, 59, 0.4)',
-                border: hovered === cat.id ? '1px solid rgba(96, 165, 250, 0.5)' : '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: 16,
-                padding: '1rem',
+                background: hovered === cat.id ? 'linear-gradient(145deg, rgba(0, 255, 255, 0.2), rgba(255, 20, 147, 0.2))' : 'linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.6))',
+                border: hovered === cat.id ? '2px solid #00FFFF' : '2px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: 24,
+                padding: '2rem 1.5rem',
                 cursor: 'pointer',
-                boxShadow: hovered === cat.id ? '0 0 20px rgba(59, 130, 246, 0.2)' : '0 10px 30px rgba(0,0,0,0.5)',
-                transform: hovered === cat.id ? 'translateY(-4px)' : 'none',
-                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                animation: `slideUp 0.4s ${0.05 * i}s both`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem',
+                boxShadow: hovered === cat.id ? '0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(255, 20, 147, 0.2)' : '0 15px 35px rgba(0,0,0,0.8)',
+                transform: hovered === cat.id ? 'scale(1.05) translateY(-5px)' : 'scale(1)',
+                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                animation: `slideUp 0.5s ${0.05 * i}s both`,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem',
                 textAlign: 'center',
-                backdropFilter: 'blur(10px)'
+                backdropFilter: 'blur(20px)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 60, height: 60, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 90, height: 90, background: 'rgba(0,0,0,0.5)', border: hovered === cat.id ? '3px solid #FF1493' : '3px solid rgba(255,255,255,0.2)', borderRadius: '50%', boxShadow: '0 10px 20px rgba(0,0,0,0.5)', overflow: 'hidden', transition: 'all 0.3s ease' }}>
                 {cat.thumbnail ? (
-                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '8px', background: 'linear-gradient(135deg, #e2e8f0, #ffffff)', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
+                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px', background: 'linear-gradient(135deg, #FFF, #E0E0E0)', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
                 ) : (
-                  <span style={{ fontSize: '1.5rem' }}>{cat.emoji || '✨'}</span>
+                  <span style={{ fontSize: '2.5rem' }}>{cat.emoji || '✨'}</span>
                 )}
               </div>
-              <h3 style={{ fontFamily: "'Nunito'", fontWeight: 800, fontSize: '0.95rem', color: '#f1f5f9', margin: 0, letterSpacing: '0.5px' }}>{cat.name}</h3>
-              <span style={{ color: '#94a3b8', fontFamily: "'Nunito'", fontWeight: 700, fontSize: '0.7rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 20, padding: '3px 10px' }}>
-                {cat.id === 's8ul' ? 33 : 24} Chars
+              <h3 className="display-font" style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: 0, textShadow: '0 2px 5px rgba(0,0,0,0.8)', letterSpacing: '1px' }}>{cat.name}</h3>
+              <span style={{ color: '#00FFFF', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.85rem', background: 'rgba(0,0,0,0.5)', border: '1px solid #00FFFF', borderRadius: 30, padding: '4px 12px', boxShadow: '0 0 10px rgba(0,255,255,0.2)' }}>
+                {cat.id === 's8ul' ? 33 : 24} CHARACTERS
               </span>
             </button>
           ))}
