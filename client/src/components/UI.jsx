@@ -473,7 +473,7 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 50, height: 50, background: '#3b82f6', border: '2px solid #1e3a8a', borderRadius: '50%', boxShadow: '2px 2px 0 rgba(0,0,0,0.5)', overflow: 'hidden' }}>
                 {cat.thumbnail ? (
-                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', background: '#fff' }} />
+                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', background: '#fff', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
                 ) : (
                   <span style={{ fontSize: '1.2rem' }}>{cat.emoji || '✨'}</span>
                 )}
