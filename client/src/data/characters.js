@@ -30,7 +30,7 @@ export const CATEGORIES = [
     emoji: '🔥',
     color: '#FF2A5F',
     description: 'The S8UL Esports Family',
-    thumbnail: 'https://yt3.googleusercontent.com/ytc/AIdro_k62Ue22C6YnLw25H2J748-U8X697Z0R5O0_z8p5w=s900-c-k-c0x00ffffff-no-rj',
+    thumbnail: 'https://s8ul.gg/img/logo.webp',
   },
   {
     id: 'indianyoutubers',
@@ -38,7 +38,7 @@ export const CATEGORIES = [
     emoji: '🇮🇳',
     color: '#FF9933',
     description: 'Top Indian Content Creators',
-    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png',
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdmRc6Q5XlB63S4JuXiGfpCxElTlpzb2ReGxejwukmgQ&s=10',
   },
   {
     id: 'indiangamers',
@@ -70,7 +70,7 @@ export const CATEGORIES = [
     emoji: '🏏',
     color: '#000080',
     description: 'Legends of Indian Cricket',
-    thumbnail: 'https://cdn-icons-png.flaticon.com/512/5753/5753696.png',
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZRvPEQD8G_bd2Q-rK2VlMwT9t7krPkcQ7pgLazFZpTA&s=10',
   },
   {
     id: 'indianstars',
@@ -110,7 +110,7 @@ export const CATEGORIES = [
     emoji: '🦸',
     color: '#00E5FF',
     description: 'Marvel & DC icons',
-    thumbnail: 'https://cdn-icons-png.flaticon.com/512/1654/1654316.png',
+    thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe8HQp5CFGVNgLTMBGNMs75_Gvn15RxQEd8PtlnPyenA&s=10',
   },
   {
     id: 'memes',
