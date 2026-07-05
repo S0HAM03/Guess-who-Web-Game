@@ -176,10 +176,28 @@ function handleAnswerTimeout(roomCode, askerId) {
   return { newTurn: answerer.id, round: room.round };
 }
 
+// Force pass turn due to 90s timeout
+function forcePassTurn(roomCode, timedOutPlayerId) {
+  const room = rooms.get(roomCode);
+  if (!room || room.status !== 'playing') return null;
+  if (room.currentTurn !== timedOutPlayerId) return null; // already passed or answered
+  
+  const opponent = room.players.find(p => p.id !== timedOutPlayerId);
+  if (!opponent) return null;
+
+  // Clear any pending questions just in case, though they shouldn't exist if turn timer was running
+  room.pendingQuestion = null;
+  room.pendingAskerId = null;
+  room.currentTurn = opponent.id;
+  room.round++;
+
+  return { newTurn: opponent.id, round: room.round };
+}
+
 module.exports = {
   createRoom, joinRoom, getRoomBySocket,
   initSelectionPhase, selectCharacter, beginGame,
   submitQuestion, submitAnswer, makeGuess,
   eliminateCharacter, removePlayer, getPlayerList,
-  handleAnswerTimeout,
+  handleAnswerTimeout, forcePassTurn,
 };

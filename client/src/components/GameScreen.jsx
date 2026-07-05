@@ -126,6 +126,7 @@ function CharacterCard({ char, isEliminated, isSecret, isGuessing, onToggle, onG
 function QAPanel({
   isMyTurn, question, askerId, myId, opponentName,
   onSendQuestion, onAnswer, isGuessing, setIsGuessing, lastAnswer, onAnswerTimeout,
+  turnTimeLeft
 }) {
   const [inputQ, setInputQ] = useState('');
   const iNeedToAnswer = !!question && askerId !== myId;
@@ -164,6 +165,12 @@ function QAPanel({
       {isMyTurn && !question && !isGuessing && (
         <>
           <div style={{ flex: 1, minWidth: 180 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+              <span style={{ color: '#94a3b8', fontSize: '0.75rem', fontFamily: "'Nunito'", fontWeight: 800 }}>TYPE YOUR QUESTION</span>
+              <span style={{ color: turnTimeLeft <= 10 ? '#FF2A5F' : '#94a3b8', fontSize: '0.75rem', fontFamily: "'Nunito'", fontWeight: 900, animation: turnTimeLeft <= 10 ? 'pulseHard 1s infinite' : 'none' }}>
+                ⏳ {turnTimeLeft}s LEFT
+              </span>
+            </div>
             <input id="question-input" value={inputQ}
               onChange={e => setInputQ(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
@@ -213,11 +220,16 @@ function QAPanel({
       )}
 
       {!isMyTurn && !question && (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Zap size={20} color="#000" />
-          <p style={{ color: '#000', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1rem' }}>
-            Waiting for <strong>{opponentName}</strong> to ask...
-          </p>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Zap size={20} color="#000" />
+            <p style={{ color: '#000', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1rem', margin: 0 }}>
+              Waiting for <strong>{opponentName}</strong> to ask...
+            </p>
+          </div>
+          <div style={{ color: '#475569', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.9rem' }}>
+            ⏳ {turnTimeLeft}s
+          </div>
         </div>
       )}
 
@@ -246,12 +258,14 @@ function QAPanel({
 export default function GameScreen({
   characters, mySecretCharId, myId, myName, opponentName,
   currentTurn, round, category, question, askerId, lastAnswer,
-  onSendQuestion, onAnswer, onMakeGuess, onEliminateChar, onAnswerTimeout,
+  onSendQuestion, onAnswer, onMakeGuess, onEliminateChar, onAnswerTimeout, turnSkipped
 }) {
   const [eliminated, setEliminated] = useState(new Set());
   const [isGuessing, setIsGuessing] = useState(false);
   const [showSecret, setShowSecret] = useState(true);
   const [answerFlash, setAnswerFlash] = useState(null);
+  const [turnTimeLeft, setTurnTimeLeft] = useState(90);
+  const [showSkippedAlert, setShowSkippedAlert] = useState(false);
 
   const isMyTurn = currentTurn === myId;
   const mySecret = characters.find(c => c.id === mySecretCharId);
@@ -265,6 +279,27 @@ export default function GameScreen({
       return () => clearTimeout(t);
     }
   }, [lastAnswer, round]);
+
+  useEffect(() => {
+    // 90s Turn Timer countdown logic
+    if (question) {
+      setTurnTimeLeft(90);
+      return;
+    }
+    setTurnTimeLeft(90);
+    const interval = setInterval(() => {
+      setTurnTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [currentTurn, question]);
+
+  useEffect(() => {
+    if (turnSkipped) {
+      setShowSkippedAlert(true);
+      const t = setTimeout(() => setShowSkippedAlert(false), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [turnSkipped, currentTurn]);
 
   const toggleEliminate = useCallback((charId) => {
     if (charId === mySecretCharId) return;
@@ -372,7 +407,32 @@ export default function GameScreen({
         setIsGuessing={setIsGuessing}
         lastAnswer={answerFlash}
         onAnswerTimeout={onAnswerTimeout}
+        turnTimeLeft={turnTimeLeft}
       />
+      
+      {showSkippedAlert && isMyTurn && (
+        <div style={{
+          position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
+          background: '#FF2A5F', color: '#FFF', border: '3px solid #000', borderRadius: 12,
+          padding: '12px 24px', zIndex: 1000, boxShadow: '4px 4px 0 #000',
+          fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1rem',
+          animation: 'bounceDown 0.5s cubic-bezier(0.175,0.885,0.32,1.275)'
+        }}>
+          ⚠️ {opponentName} ran out of time! It's your turn!
+        </div>
+      )}
+      
+      {showSkippedAlert && !isMyTurn && (
+        <div style={{
+          position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
+          background: '#FF2A5F', color: '#FFF', border: '3px solid #000', borderRadius: 12,
+          padding: '12px 24px', zIndex: 1000, boxShadow: '4px 4px 0 #000',
+          fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1rem',
+          animation: 'bounceDown 0.5s cubic-bezier(0.175,0.885,0.32,1.275)'
+        }}>
+          ⚠️ You ran out of time! Turn passed to {opponentName}.
+        </div>
+      )}
     </div>
   );
 }

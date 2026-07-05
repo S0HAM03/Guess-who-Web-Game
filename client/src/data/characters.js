@@ -48,7 +48,7 @@ export const CATEGORIES = [
     color: '#138808',
     description: 'Top Indian Gaming Creators',
     thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU8L-E_foQ_dU8JNbZ9qYEA20VuBEcxta8YvN7bBynryTpEUKOdOMhz-2e&s=10',
-    zoom: 2.5,
+    zoom: 2.0,
   },
   {
     id: 'topcreators',
@@ -84,7 +84,7 @@ export const CATEGORIES = [
     color: '#9D00FF',
     description: 'Bollywood & Tollywood Icons',
     thumbnail: 'https://img.magnific.com/free-vector/realistic-bollywood-cinema-sign_52683-35071.jpg',
-    zoom: 2.3,
+    zoom: 1.1,
   },
   {
     id: 'footballers',
@@ -101,7 +101,7 @@ export const CATEGORIES = [
     color: '#9D00FF',
     description: 'Hollywood A-listers',
     thumbnail: 'https://cdn.vectorstock.com/i/500p/14/02/comedy-amp-tragedy-masks-icon-vector-54451402.jpg',
-    zoom: 2.4,
+    zoom: 2.0,
   },
   {
     id: 'anime',
@@ -110,7 +110,7 @@ export const CATEGORIES = [
     color: '#FF6600',
     description: 'Iconic anime characters',
     thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRn-lrsYnZMOBqO0jP_4QJ5jW261akaqopXwVhN_zT6Q&s=10',
-    zoom: 1.8,
+    zoom: 1.2,
   },
   {
     id: 'superheroes',
@@ -119,7 +119,7 @@ export const CATEGORIES = [
     color: '#00E5FF',
     description: 'Marvel & DC icons',
     thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe8HQp5CFGVNgLTMBGNMs75_Gvn15RxQEd8PtlnPyenA&s=10',
-    zoom: 1.9,
+    zoom: 1.0,
   },
   {
     id: 'memes',
@@ -128,7 +128,7 @@ export const CATEGORIES = [
     color: '#FF2A5F',
     description: 'Internet-famous people',
     thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY0Qjbcb3XCa3TVjOpkhAB4t1E91wnYkVr3Jpg8sxFTQ&s=10',
-    zoom: 2.0,
+    zoom: 1.5,
   }
 ];
 

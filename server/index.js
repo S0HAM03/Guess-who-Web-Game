@@ -14,7 +14,7 @@ const {
   initSelectionPhase, selectCharacter, beginGame,
   submitQuestion, submitAnswer, makeGuess,
   eliminateCharacter, removePlayer, getPlayerList,
-  handleAnswerTimeout,
+  handleAnswerTimeout, forcePassTurn,
 } = require('./gameLogic');
 
 const app = express();
@@ -56,6 +56,32 @@ function startAnswerTimer(roomCode, askerId, TIMEOUT_MS = 15000) {
     }
   }, TIMEOUT_MS);
   answerTimers.set(roomCode, handle);
+}
+
+// Track server-side 90s turn timers per room
+const turnTimers = new Map(); // roomCode → setTimeout handle
+
+function clearTurnTimer(roomCode) {
+  if (turnTimers.has(roomCode)) {
+    clearTimeout(turnTimers.get(roomCode));
+    turnTimers.delete(roomCode);
+  }
+}
+
+function startTurnTimer(roomCode, currentTurnId, TIMEOUT_MS = 90000) {
+  clearTurnTimer(roomCode);
+  const handle = setTimeout(() => {
+    const result = forcePassTurn(roomCode, currentTurnId);
+    if (result) {
+      io.to(roomCode).emit('turn_timeout', {
+        newTurn: result.newTurn,
+        round: result.round,
+      });
+      console.log(`[TIMEOUT] ${roomCode}: no question/guess in 90s. Turn passed → ${result.newTurn}`);
+      startTurnTimer(roomCode, result.newTurn, TIMEOUT_MS);
+    }
+  }, TIMEOUT_MS);
+  turnTimers.set(roomCode, handle);
 }
 
 // ─────────────────────────────────────────────
@@ -149,6 +175,7 @@ io.on('connection', (socket) => {
         });
       });
       console.log(`[GAME] ${roomCode} started. First turn: ${r.currentTurn}`);
+      startTurnTimer(roomCode, r.currentTurn, 90000);
     }
   });
 
@@ -162,6 +189,7 @@ io.on('connection', (socket) => {
       askerId: result.askerId,
     });
 
+    clearTurnTimer(roomCode); // Turn action taken
     // Start 15-second server-side answer timer
     startAnswerTimer(roomCode, result.askerId);
     console.log(`[Q] ${roomCode}: "${question}"`);
@@ -181,6 +209,7 @@ io.on('connection', (socket) => {
       prevQuestion: result.prevQuestion,
     });
     console.log(`[A] ${roomCode}: ${answer}. New turn: ${result.newTurn}`);
+    startTurnTimer(roomCode, result.newTurn, 90000); // Start 90s for new player
   });
 
   // ── ELIMINATE CHARACTER (client-local only) ──
@@ -193,6 +222,7 @@ io.on('connection', (socket) => {
     const result = makeGuess(roomCode, socket.id, charId);
     if (!result.success) { socket.emit('game_error', { message: result.message }); return; }
     clearAnswerTimer(roomCode);
+    clearTurnTimer(roomCode);
     io.to(roomCode).emit('game_over', {
       winnerId: result.winnerId,
       correct: result.correct,

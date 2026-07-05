@@ -84,7 +84,7 @@ export default function App() {
         characters, category, mySecretCharId,
         myId, myName, opponentName,
         currentTurn, round,
-        question: null, askerId: null, lastAnswer: null,
+        question: null, askerId: null, lastAnswer: null, turnSkipped: false,
       });
       setWinnerState(null);
       setDisconnected(false);
@@ -102,7 +102,18 @@ export default function App() {
         question: null, askerId: null,
         lastAnswer: timeout ? null : answer,
         currentTurn: newTurn,
+        round, turnSkipped: false,
+      }));
+    });
+
+    s.on('turn_timeout', ({ newTurn, round }) => {
+      setGameState(prev => ({
+        ...prev,
+        question: null, askerId: null,
+        lastAnswer: null,
+        currentTurn: newTurn,
         round,
+        turnSkipped: true,
       }));
     });
 
@@ -135,6 +146,7 @@ export default function App() {
       s.off('room_created'); s.off('room_joined'); s.off('room_error');
       s.off('player_list'); s.off('selection_phase'); s.off('selection_update');
       s.off('game_start'); s.off('question_received'); s.off('answer_received');
+      s.off('turn_timeout');
       s.off('game_over'); s.off('rematch_ready'); s.off('opponent_disconnected');
     };
   }, []);
@@ -268,6 +280,7 @@ export default function App() {
           onMakeGuess={handleMakeGuess}
           onEliminateChar={handleEliminateChar}
           onAnswerTimeout={handleAnswerTimeout}
+          turnSkipped={gameState.turnSkipped}
         />
       )}
       {view === 'winner' && winnerState && (
