@@ -30,6 +30,7 @@ export const CATEGORIES = [
     emoji: '🔥',
     color: '#FF2A5F',
     description: 'The S8UL Esports Family',
+    thumbnail: 'https://yt3.googleusercontent.com/ytc/AIdro_k62Ue22C6YnLw25H2J748-U8X697Z0R5O0_z8p5w=s900-c-k-c0x00ffffff-no-rj',
   },
   {
     id: 'indianyoutubers',
@@ -37,6 +38,7 @@ export const CATEGORIES = [
     emoji: '🇮🇳',
     color: '#FF9933',
     description: 'Top Indian Content Creators',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png',
   },
   {
     id: 'indiangamers',
@@ -44,6 +46,7 @@ export const CATEGORIES = [
     emoji: '🎮',
     color: '#138808',
     description: 'Top Indian Gaming Creators',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/2991/2991606.png',
   },
   {
     id: 'topcreators',
@@ -51,6 +54,7 @@ export const CATEGORIES = [
     emoji: '🌍',
     color: '#FFD700',
     description: 'Biggest YouTubers in the World',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/1006/1006992.png',
   },
   {
     id: 'streamers',
@@ -58,6 +62,7 @@ export const CATEGORIES = [
     emoji: '📺',
     color: '#9D00FF',
     description: 'Live streaming legends',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Twitch_Glitch_Logo_Purple.svg/512px-Twitch_Glitch_Logo_Purple.svg.png',
   },
   {
     id: 'indiancricketers',
@@ -65,6 +70,7 @@ export const CATEGORIES = [
     emoji: '🏏',
     color: '#000080',
     description: 'Legends of Indian Cricket',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/5753/5753696.png',
   },
   {
     id: 'indianstars',
@@ -72,6 +78,7 @@ export const CATEGORIES = [
     emoji: '🎬',
     color: '#9D00FF',
     description: 'Bollywood & Tollywood Icons',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/3172/3172566.png',
   },
   {
     id: 'footballers',
@@ -79,6 +86,7 @@ export const CATEGORIES = [
     emoji: '⚽',
     color: '#00FF66',
     description: 'World-class soccer stars',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/861/861512.png',
   },
   {
     id: 'actors',
@@ -86,6 +94,7 @@ export const CATEGORIES = [
     emoji: '🎭',
     color: '#9D00FF',
     description: 'Hollywood A-listers',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/3418/3418886.png',
   },
   {
     id: 'anime',
@@ -93,6 +102,7 @@ export const CATEGORIES = [
     emoji: '⚔️',
     color: '#FF6600',
     description: 'Iconic anime characters',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/1149/1149405.png',
   },
   {
     id: 'superheroes',
@@ -100,6 +110,7 @@ export const CATEGORIES = [
     emoji: '🦸',
     color: '#00E5FF',
     description: 'Marvel & DC icons',
+    thumbnail: 'https://cdn-icons-png.flaticon.com/512/1654/1654316.png',
   },
   {
     id: 'memes',
@@ -107,6 +118,7 @@ export const CATEGORIES = [
     emoji: '😂',
     color: '#FF2A5F',
     description: 'Internet-famous people',
+    thumbnail: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/Original_Doge_meme.jpg/300px-Original_Doge_meme.jpg',
   }
 ];
 

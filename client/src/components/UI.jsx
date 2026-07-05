@@ -471,8 +471,12 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
                 textAlign: 'center'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, background: '#3b82f6', border: '2px solid #1e3a8a', borderRadius: '50%', boxShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}>
-                <span style={{ fontSize: '1.2rem' }}>{cat.emoji || '✨'}</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 50, height: 50, background: '#3b82f6', border: '2px solid #1e3a8a', borderRadius: '50%', boxShadow: '2px 2px 0 rgba(0,0,0,0.5)', overflow: 'hidden' }}>
+                {cat.thumbnail ? (
+                  <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', background: '#fff' }} />
+                ) : (
+                  <span style={{ fontSize: '1.2rem' }}>{cat.emoji || '✨'}</span>
+                )}
               </div>
               <h3 className="display-font" style={{ fontSize: '0.85rem', color: '#f8fafc', margin: 0 }}>{cat.name}</h3>
               <span style={{ color: '#94a3b8', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.65rem', background: '#0f172a', border: '2px solid #334155', borderRadius: 6, padding: '2px 6px' }}>
