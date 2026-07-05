@@ -21,7 +21,7 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3002;
 
-const allowedOrigins = '*';
+const allowedOrigins = process.env.CLIENT_ORIGIN || '*';
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
