@@ -440,19 +440,19 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EAF2FA' }}>
-      <div style={{ width: '100%', maxWidth: 1000, background: '#FFFFFF', borderRadius: 12, padding: '3rem', boxShadow: '0 20px 50px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', padding: '3rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '100%', maxWidth: 1000, margin: 'auto' }}>
         
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <h2 style={{ fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1.4rem', color: '#1B92F6', margin: '0 0 0.5rem 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 className="display-font" style={{ fontSize: 'clamp(2.5rem,6vw,4.5rem)', color: '#ffffff', margin: '0 0 1rem 0', textShadow: '0 4px 20px rgba(0, 0, 0, 0.8)', letterSpacing: '2px' }}>
             SELECT CATEGORIES
           </h2>
-          <p style={{ color: '#A0AAB5', fontFamily: "'Nunito'", fontWeight: 600, margin: 0, fontSize: '1rem' }}>
+          <p style={{ color: '#94a3b8', fontWeight: 800, fontFamily: "'Nunito'", marginTop: '1rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
             Please select a category to start the round
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', maxHeight: '60vh', overflowY: 'auto', padding: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', padding: '1rem' }}>
           {categories.map((cat, i) => {
             const bgGradient = gradients[i % gradients.length];
             return (
@@ -471,7 +471,8 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
                   transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
                   textAlign: 'center',
-                  position: 'relative'
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
                 <div style={{ 
@@ -489,11 +490,6 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
                 <span style={{ color: 'rgba(255,255,255,0.8)', fontFamily: "'Nunito'", fontWeight: 600, fontSize: '0.9rem' }}>
                   {cat.id === 's8ul' ? 33 : 24} items
                 </span>
-                
-                {/* Decorative horizontal cutouts (simplified) */}
-                <div style={{ position: 'absolute', top: '50%', left: -10, width: 25, height: 6, background: '#EAF2FA', borderRadius: 4, zIndex: 1 }}></div>
-                <div style={{ position: 'absolute', top: '45%', right: -10, width: 20, height: 6, background: '#EAF2FA', borderRadius: 4, zIndex: 1 }}></div>
-                <div style={{ position: 'absolute', top: '55%', right: -5, width: 15, height: 6, background: '#EAF2FA', borderRadius: 4, zIndex: 1 }}></div>
               </button>
             );
           })}
