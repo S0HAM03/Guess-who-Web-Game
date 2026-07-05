@@ -429,19 +429,19 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);
 
   return (
-    <div style={{ minHeight: '100vh', padding: '3rem 2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(135deg, #1e0024 0%, #0a0026 50%, #001224 100%)' }}>
+    <div style={{ minHeight: '100vh', padding: '3rem 2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'radial-gradient(circle at top, #1e293b 0%, #020617 100%)' }}>
       <div style={{ width: '100%', maxWidth: 1200, margin: 'auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem', animation: 'slideUp 0.5s ease-out' }}>
-          <div style={{ display: 'inline-flex', background: 'linear-gradient(90deg, #FF1493, #00FFFF)', borderRadius: 30, padding: '3px' }}>
-            <div style={{ display: 'flex', background: '#0a0026', borderRadius: 27, padding: '8px 24px', gap: 10, alignItems: 'center' }}>
+          <div style={{ display: 'inline-flex', background: 'linear-gradient(135deg, #FFD700, #F59E0B)', borderRadius: 30, padding: '2px' }}>
+            <div style={{ display: 'flex', background: '#0f172a', borderRadius: 28, padding: '8px 24px', gap: 10, alignItems: 'center' }}>
               <Sparkles size={20} color="#FFD700" />
-              <span className="display-font" style={{ fontSize: '1rem', color: '#FFF', letterSpacing: '2px', textTransform: 'uppercase' }}>Host Selection</span>
+              <span style={{ fontFamily: "'Nunito'", fontWeight: 800, fontSize: '1rem', color: '#FFF', letterSpacing: '2px', textTransform: 'uppercase' }}>Host Selection</span>
             </div>
           </div>
-          <h1 className="display-font" style={{ fontSize: 'clamp(2.5rem,6vw,4.5rem)', color: '#ffffff', margin: '1rem 0 0 0', textShadow: '0 0 40px rgba(0, 255, 255, 0.6), 0 0 10px rgba(255, 20, 147, 0.8)', letterSpacing: '4px' }}>
+          <h1 className="display-font" style={{ fontSize: 'clamp(2.5rem,6vw,4.5rem)', color: '#ffffff', margin: '1rem 0 0 0', textShadow: '0 4px 20px rgba(0, 0, 0, 0.8)', letterSpacing: '2px' }}>
             PICK A CATEGORY
           </h1>
-          <p style={{ color: '#00FFFF', fontWeight: 800, fontFamily: "'Nunito'", marginTop: '1rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
+          <p style={{ color: '#94a3b8', fontWeight: 800, fontFamily: "'Nunito'", marginTop: '1rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
             Choose the character set for this round
           </p>
         </div>
@@ -453,12 +453,12 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
               onMouseEnter={() => setHovered(cat.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                background: hovered === cat.id ? 'linear-gradient(145deg, rgba(0, 255, 255, 0.2), rgba(255, 20, 147, 0.2))' : 'linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.6))',
-                border: hovered === cat.id ? '2px solid #00FFFF' : '2px solid rgba(255, 255, 255, 0.1)',
+                background: hovered === cat.id ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                border: hovered === cat.id ? '2px solid #60a5fa' : '2px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: 24,
                 padding: '2rem 1.5rem',
                 cursor: 'pointer',
-                boxShadow: hovered === cat.id ? '0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(255, 20, 147, 0.2)' : '0 15px 35px rgba(0,0,0,0.8)',
+                boxShadow: hovered === cat.id ? '0 10px 30px rgba(59, 130, 246, 0.3)' : '0 15px 35px rgba(0,0,0,0.5)',
                 transform: hovered === cat.id ? 'scale(1.05) translateY(-5px)' : 'scale(1)',
                 transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                 animation: `slideUp 0.5s ${0.05 * i}s both`,
@@ -467,15 +467,15 @@ export function CategorySelectView({ categories, onSelect, onOpenBuilder }) {
                 backdropFilter: 'blur(20px)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 90, height: 90, background: 'rgba(0,0,0,0.5)', border: hovered === cat.id ? '3px solid #FF1493' : '3px solid rgba(255,255,255,0.2)', borderRadius: '50%', boxShadow: '0 10px 20px rgba(0,0,0,0.5)', overflow: 'hidden', transition: 'all 0.3s ease' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 90, height: 90, background: 'rgba(255,255,255,0.05)', border: hovered === cat.id ? '3px solid #60a5fa' : '3px solid rgba(255,255,255,0.1)', borderRadius: '50%', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)', overflow: 'hidden', transition: 'all 0.3s ease' }}>
                 {cat.thumbnail ? (
                   <img src={cat.thumbnail} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px', background: 'linear-gradient(135deg, #FFF, #E0E0E0)', transform: cat.zoom ? `scale(${cat.zoom})` : 'none' }} />
                 ) : (
                   <span style={{ fontSize: '2.5rem' }}>{cat.emoji || '✨'}</span>
                 )}
               </div>
-              <h3 className="display-font" style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: 0, textShadow: '0 2px 5px rgba(0,0,0,0.8)', letterSpacing: '1px' }}>{cat.name}</h3>
-              <span style={{ color: '#00FFFF', fontFamily: "'Nunito'", fontWeight: 900, fontSize: '0.85rem', background: 'rgba(0,0,0,0.5)', border: '1px solid #00FFFF', borderRadius: 30, padding: '4px 12px', boxShadow: '0 0 10px rgba(0,255,255,0.2)' }}>
+              <h3 style={{ fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1.3rem', color: '#f8fafc', margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>{cat.name}</h3>
+              <span style={{ color: '#94a3b8', fontFamily: "'Nunito'", fontWeight: 800, fontSize: '0.8rem', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 30, padding: '4px 12px' }}>
                 {cat.id === 's8ul' ? 33 : 24} CHARACTERS
               </span>
             </button>
