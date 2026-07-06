@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Send, Target, CheckCircle, XCircle, Eye, EyeOff, Zap, Clock } from 'lucide-react';
+import { Send, Target, CheckCircle, XCircle, Eye, EyeOff, Zap, Clock, MessageSquare, ChevronRight } from 'lucide-react';
 import { ChunkyButton } from './UI';
 import { SmartImage } from './SmartImage';
+import { Sound } from '../utils/SoundManager';
 
 /* ═══════════════════════════════════════════════════════
    15-SECOND ANSWER TIMER (only shown to the answerer)
@@ -286,6 +287,7 @@ export default function GameScreen({
   const [turnTimeLeft, setTurnTimeLeft] = useState(90);
   const [skippedAlertMsg, setSkippedAlertMsg] = useState(null);
   const [hasAskedThisTurn, setHasAskedThisTurn] = useState(false);
+  const [showMobileLog, setShowMobileLog] = useState(false);
   // Local turn state — allows instant client-side pass
   const [localTurn, setLocalTurn] = useState(currentTurnProp);
   const [localRound, setLocalRound] = useState(roundProp);
@@ -307,12 +309,17 @@ export default function GameScreen({
     setTurnTimeLeft(90);
     setHasAskedThisTurn(false);
     setIsGuessing(false);
-  }, [localTurn]);
+    if (localTurn === myId) {
+      Sound.playTurnStart();
+    }
+  }, [localTurn, myId]);
 
   useEffect(() => { if (question) setIsGuessing(false); }, [question]);
 
   useEffect(() => {
     if (lastAnswer) {
+      if (lastAnswer.text === 'YES') Sound.playSuccess();
+      else Sound.playError();
       setAnswerFlash(lastAnswer.text);
       const t = setTimeout(() => setAnswerFlash(null), 3000);
       return () => clearTimeout(t);
@@ -321,6 +328,7 @@ export default function GameScreen({
 
   useEffect(() => {
     if (wrongGuessFlash) {
+      Sound.playError();
       setEliminated(prev => {
         const next = new Set(prev);
         next.add(wrongGuessFlash);
@@ -344,6 +352,7 @@ export default function GameScreen({
 
   useEffect(() => {
     if (turnSkipped) {
+      Sound.playError();
       if (isMyTurn) {
         setSkippedAlertMsg(`⚠️ ${opponentName} ran out of time! It's your turn!`);
       } else {
@@ -370,7 +379,12 @@ export default function GameScreen({
   const toggleEliminate = useCallback((charId) => {
     setEliminated(prev => {
       const next = new Set(prev);
-      next.has(charId) ? next.delete(charId) : next.add(charId);
+      if (next.has(charId)) {
+        next.delete(charId);
+      } else {
+        next.add(charId);
+        Sound.playEliminate();
+      }
       onEliminateChar(charId);
       return next;
     });
@@ -459,8 +473,17 @@ export default function GameScreen({
           </div>
         </div>
 
+        {/* LOG TOGGLE BUTTON (MOBILE ONLY) */}
+        <div 
+          className="log-toggle-btn" 
+          onClick={() => setShowMobileLog(!showMobileLog)}
+          style={{ right: showMobileLog ? 290 : 16 }}
+        >
+          {showMobileLog ? <ChevronRight size={28} color="#000" /> : <MessageSquare size={26} color="#000" />}
+        </div>
+
         {/* ACTIVITY LOG (Right Side) */}
-        <div style={{ width: 280, background: '#1e293b', borderLeft: '1px solid #334155', display: 'flex', flexDirection: 'column', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        <div className={`activity-log-panel ${showMobileLog ? 'open' : ''}`}>
           <div style={{ padding: '16px', borderBottom: '1px solid #334155' }}>
             <span style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: 0.5 }}>Activity Log</span>
           </div>

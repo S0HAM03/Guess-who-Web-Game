@@ -5,6 +5,7 @@ import {
   Sparkles, Target, HelpCircle, CheckCircle, XCircle, Eye, Star
 } from 'lucide-react';
 import { SmartImage } from './SmartImage';
+import { Sound } from '../utils/SoundManager';
 
 /* ═══════════════════════════════════════════════════════
    DESIGN TOKENS — Neo-Brutalism (matches HiveMind)
@@ -62,8 +63,15 @@ export function AnimatedCursor() {
 ═══════════════════════════════════════════════════════ */
 export function ChunkyButton({ children, color = '#FFFFFF', onClick, disabled = false, style = {}, id }) {
   const [active, setActive] = useState(false);
+  const handleClick = (e) => {
+    if (!disabled) {
+      Sound.playClick();
+      if (onClick) onClick(e);
+    }
+  };
   return (
-    <button id={id} onClick={onClick} disabled={disabled}
+    <button id={id} onClick={handleClick} disabled={disabled}
+      onMouseEnter={() => { if (!disabled) Sound.playHover(); }}
       onMouseDown={() => !disabled && setActive(true)}
       onMouseUp={() => !disabled && setActive(false)}
       onMouseLeave={() => setActive(false)}

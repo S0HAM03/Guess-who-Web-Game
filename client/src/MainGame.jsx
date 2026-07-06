@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { Volume2, VolumeX } from 'lucide-react';
 import {
   AnimatedCursor, LandingView, HostSetupView, JoinSetupView,
   LobbyView, CategorySelectView, WinnerScreen, DisconnectOverlay,
@@ -9,6 +10,7 @@ import GameScreen from './components/GameScreen';
 import CharacterSelectScreen from './components/CharacterSelectScreen';
 import Footer from './components/Footer';
 import CATEGORIES, { getCharacters } from './data/characters';
+import { Sound } from './utils/SoundManager';
 import './index.css';
 
 // ── Socket connection ──────────────────────────────────
@@ -52,6 +54,7 @@ export default function MainGame() {
   const [winnerState, setWinnerState] = useState(null);
   const [disconnected, setDisconnected] = useState(false);
   const [activityLog, setActivityLog] = useState([]);
+  const [isMuted, setIsMuted] = useState(Sound.isMuted);
   const socketRef = useRef(null);
   const stateRef = useRef();
 
@@ -275,12 +278,27 @@ export default function MainGame() {
     setView('landing'); setLobbyError('');
   }, []);
 
+  const handleToggleMute = useCallback(() => {
+    setIsMuted(Sound.toggleMute());
+  }, []);
+
   // ── Render ────────────────────────────────────────────
 
   return (
     <>
       <style>{`* { cursor: none !important; }`}</style>
       <AnimatedCursor/>
+
+      <button 
+        onClick={handleToggleMute}
+        title="Toggle Audio"
+        style={{ position: 'fixed', bottom: '1rem', left: '1rem', zIndex: 1000, background: '#1e293b', border: '3px solid #000', borderRadius: '50%', width: 54, height: 54, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '3px 3px 0 #000', transition: 'transform 0.1s' }}
+        onMouseDown={e => e.currentTarget.style.transform = 'translate(3px,3px)'}
+        onMouseUp={e => e.currentTarget.style.transform = 'none'}
+        onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+      >
+        {isMuted ? <VolumeX color="#FF2A5F" size={28}/> : <Volume2 color="#00FF66" size={28}/>}
+      </button>
 
       {view === 'landing' && (
         <>
