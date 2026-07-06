@@ -51,7 +51,13 @@ export default function MainGame() {
 
   const [winnerState, setWinnerState] = useState(null);
   const [disconnected, setDisconnected] = useState(false);
+  const [activityLog, setActivityLog] = useState([]);
   const socketRef = useRef(null);
+  const stateRef = useRef();
+
+  useEffect(() => {
+    stateRef.current = { gameState, myId: selectData.myId, myName: selectData.myName, opponentName: selectData.opponentName };
+  }, [gameState, selectData]);
 
   // ── Connect & register events ──────────────────────────
   useEffect(() => {
@@ -90,6 +96,7 @@ export default function MainGame() {
       });
       setWinnerState(null);
       setDisconnected(false);
+      setActivityLog([]); // clear log on game start
       setView('game');
     });
 
@@ -98,17 +105,30 @@ export default function MainGame() {
       setGameState(prev => ({ ...prev, question, askerId, lastAnswer: null }));
     });
 
-    s.on('answer_received', ({ answer, newTurn, round, timeout }) => {
+    s.on('answer_received', ({ answer, newTurn, round, timeout, prevQuestion }) => {
+      const state = stateRef.current;
+      if (!timeout) {
+        const answererName = newTurn === state.myId ? state.myName : state.opponentName;
+        const askerName = newTurn === state.myId ? state.opponentName : state.myName;
+        setActivityLog(prev => [...prev, {
+          id: Date.now(), type: 'qa', askerName, answererName, question: prevQuestion, answer
+        }]);
+      }
+      
       setGameState(prev => ({
         ...prev,
         question: null, askerId: null,
-        lastAnswer: timeout ? null : answer,
+        lastAnswer: timeout ? null : { text: answer, id: Date.now() },
         currentTurn: newTurn,
         round, turnSkipped: false,
       }));
     });
 
     s.on('turn_timeout', ({ newTurn, round }) => {
+      const state = stateRef.current;
+      const timedOutName = newTurn === state.myId ? state.opponentName : state.myName;
+      setActivityLog(prev => [...prev, { id: Date.now(), type: 'timeout', player: timedOutName }]);
+      
       setGameState(prev => ({
         ...prev,
         question: null, askerId: null,
@@ -120,6 +140,10 @@ export default function MainGame() {
     });
 
     s.on('turn_passed', ({ newTurn, round }) => {
+      const state = stateRef.current;
+      const passedName = newTurn === state.myId ? state.opponentName : state.myName;
+      setActivityLog(prev => [...prev, { id: Date.now(), type: 'pass', player: passedName }]);
+
       setGameState(prev => ({
         ...prev,
         question: null, askerId: null,
@@ -131,6 +155,14 @@ export default function MainGame() {
     });
 
     s.on('guess_result', ({ correct, guesserId, guessedCharId }) => {
+      const state = stateRef.current;
+      const guesserName = guesserId === state.myId ? state.myName : state.opponentName;
+      const guessedChar = state.gameState.characters.find(c => c.id === guessedCharId)?.name || 'Someone';
+      
+      setActivityLog(prev => [...prev, {
+        id: Date.now(), type: 'guess', guesserName, guessedChar, correct
+      }]);
+
       if (!correct && guesserId === socketRef.current.id) {
         setGameState(prev => ({ ...prev, wrongGuessFlash: guessedCharId }));
         setTimeout(() => {
@@ -313,6 +345,7 @@ export default function MainGame() {
           onPassTurn={handlePassTurn}
           turnSkipped={gameState.turnSkipped}
           wrongGuessFlash={gameState.wrongGuessFlash}
+          activityLog={activityLog}
         />
       )}
       {view === 'winner' && winnerState && (

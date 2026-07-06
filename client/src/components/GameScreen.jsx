@@ -277,14 +277,14 @@ function QAPanel({
 export default function GameScreen({
   characters, mySecretCharId, myId, myName, opponentName,
   currentTurn: currentTurnProp, round: roundProp, category, question, askerId, lastAnswer,
-  onSendQuestion, onAnswer, onMakeGuess, onEliminateChar, onAnswerTimeout, onPassTurn, turnSkipped, wrongGuessFlash
+  onSendQuestion, onAnswer, onMakeGuess, onEliminateChar, onAnswerTimeout, onPassTurn, turnSkipped, wrongGuessFlash, activityLog
 }) {
   const [eliminated, setEliminated] = useState(new Set());
   const [isGuessing, setIsGuessing] = useState(false);
   const [showSecret, setShowSecret] = useState(true);
   const [answerFlash, setAnswerFlash] = useState(null);
   const [turnTimeLeft, setTurnTimeLeft] = useState(90);
-  const [showSkippedAlert, setShowSkippedAlert] = useState(false);
+  const [skippedAlertMsg, setSkippedAlertMsg] = useState(null);
   const [hasAskedThisTurn, setHasAskedThisTurn] = useState(false);
   // Local turn state — allows instant client-side pass
   const [localTurn, setLocalTurn] = useState(currentTurnProp);
@@ -313,11 +313,11 @@ export default function GameScreen({
 
   useEffect(() => {
     if (lastAnswer) {
-      setAnswerFlash(lastAnswer);
+      setAnswerFlash(lastAnswer.text);
       const t = setTimeout(() => setAnswerFlash(null), 3000);
       return () => clearTimeout(t);
     }
-  }, [lastAnswer, localRound]);
+  }, [lastAnswer]);
 
   useEffect(() => {
     if (wrongGuessFlash) {
@@ -344,11 +344,15 @@ export default function GameScreen({
 
   useEffect(() => {
     if (turnSkipped) {
-      setShowSkippedAlert(true);
-      const t = setTimeout(() => setShowSkippedAlert(false), 4000);
+      if (isMyTurn) {
+        setSkippedAlertMsg(`⚠️ ${opponentName} ran out of time! It's your turn!`);
+      } else {
+        setSkippedAlertMsg(`⚠️ You ran out of time! Turn passed to ${opponentName}.`);
+      }
+      const t = setTimeout(() => setSkippedAlertMsg(null), 4000);
       return () => clearTimeout(t);
     }
-  }, [turnSkipped, localTurn]);
+  }, [turnSkipped, isMyTurn, opponentName]);
 
   // CLIENT-SIDE INSTANT pass turn — UI flips immediately, server syncs both players
   const handlePassTurn = useCallback(() => {
@@ -429,28 +433,78 @@ export default function GameScreen({
         </div>
       </header>
 
-      {/* ── CHARACTER GRID ── */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', position: 'relative' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))',
-          gap: '1rem',
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '1rem 1rem 4rem 1rem'
-        }}>
-          {characters.map((char) => (
-            <CharacterCard
-              key={char.id}
-              char={char}
-              isEliminated={eliminated.has(char.id)}
-              isSecret={char.id === mySecretCharId}
-              isGuessing={isGuessing && isMyTurn}
-              onToggle={toggleEliminate}
-              onGuess={handleGuess}
-            />
-          ))}
+      {/* ── CONTENT (GRID + LOG) ── */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        
+        {/* CHARACTER GRID (Left Side) */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', position: 'relative' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))',
+            gap: '1rem',
+            maxWidth: 1200,
+            margin: '0 auto',
+            padding: '1rem 1rem 4rem 1rem'
+          }}>
+            {characters.map((char) => (
+              <CharacterCard
+                key={char.id}
+                char={char}
+                isEliminated={eliminated.has(char.id)}
+                isSecret={char.id === mySecretCharId}
+                isGuessing={isGuessing && isMyTurn}
+                onToggle={toggleEliminate}
+                onGuess={handleGuess}
+              />
+            ))}
+          </div>
         </div>
+
+        {/* ACTIVITY LOG (Right Side) */}
+        <div style={{ width: 280, background: '#1e293b', borderLeft: '1px solid #334155', display: 'flex', flexDirection: 'column', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+          <div style={{ padding: '16px', borderBottom: '1px solid #334155' }}>
+            <span style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: 0.5 }}>Activity Log</span>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {activityLog?.length === 0 ? (
+              <div style={{ color: '#64748b', fontSize: '0.85rem', textAlign: 'center', marginTop: 20 }}>No activity yet...</div>
+            ) : (
+              activityLog?.map(log => (
+                <div key={log.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {log.type === 'qa' && (
+                    <>
+                      <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
+                        <strong style={{ color: '#38bdf8', fontWeight: 600 }}>{log.askerName}</strong> asked:
+                      </div>
+                      <div style={{ fontSize: '0.9rem', color: '#f8fafc', padding: '8px 12px', background: '#334155', borderRadius: 6, alignSelf: 'flex-start', lineHeight: 1.4 }}>
+                        {log.question}
+                      </div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 500, color: log.answer === 'YES' ? '#4ade80' : '#f87171', marginTop: 2 }}>
+                        ↳ {log.answererName} replied {log.answer}
+                      </div>
+                    </>
+                  )}
+                  {log.type === 'timeout' && (
+                    <div style={{ fontSize: '0.85rem', color: '#fbbf24' }}>
+                      ⏱ {log.player} ran out of time.
+                    </div>
+                  )}
+                  {log.type === 'pass' && (
+                    <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                      ⏭ {log.player} passed their turn.
+                    </div>
+                  )}
+                  {log.type === 'guess' && (
+                    <div style={{ fontSize: '0.85rem', fontWeight: 500, color: log.correct ? '#4ade80' : '#f87171' }}>
+                      {log.correct ? '🏆' : '❌'} {log.guesserName} guessed {log.guessedChar}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
       </div>
       
       <div style={{ maxWidth: 1000, margin: 'auto', width: '100%', paddingBottom: '1rem' }}>
@@ -462,7 +516,7 @@ export default function GameScreen({
         />
       </div>
 
-      {showSkippedAlert && isMyTurn && (
+      {skippedAlertMsg && (
         <div style={{
           position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
           background: '#FF2A5F', color: '#FFF', border: '3px solid #000', borderRadius: 12,
@@ -470,19 +524,7 @@ export default function GameScreen({
           fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1rem',
           animation: 'bounceDown 0.5s cubic-bezier(0.175,0.885,0.32,1.275)'
         }}>
-          ⚠️ {opponentName} ran out of time! It's your turn!
-        </div>
-      )}
-      
-      {turnSkipped && !isMyTurn && (
-        <div style={{
-          position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
-          background: '#FF2A5F', color: '#FFF', border: '3px solid #000', borderRadius: 12,
-          padding: '12px 24px', zIndex: 1000, boxShadow: '4px 4px 0 #000',
-          fontFamily: "'Nunito'", fontWeight: 900, fontSize: '1rem',
-          animation: 'bounceDown 0.5s cubic-bezier(0.175,0.885,0.32,1.275)'
-        }}>
-          ⚠️ You ran out of time! Turn passed to {opponentName}.
+          {skippedAlertMsg}
         </div>
       )}
 
