@@ -368,14 +368,13 @@ export default function GameScreen({
   }, [onPassTurn]);
 
   const toggleEliminate = useCallback((charId) => {
-    if (charId === mySecretCharId) return;
     setEliminated(prev => {
       const next = new Set(prev);
       next.has(charId) ? next.delete(charId) : next.add(charId);
       onEliminateChar(charId);
       return next;
     });
-  }, [mySecretCharId, onEliminateChar]);
+  }, [onEliminateChar]);
 
   const handleGuess = useCallback((charId) => {
     setIsGuessing(false);
